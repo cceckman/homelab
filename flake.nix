@@ -11,6 +11,8 @@
         modules = [
           "${nixos}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
           common/users.nix
+          common/ssh.nix
+          provisioning/no-sd-compression.nix
         ];
       };
     };
