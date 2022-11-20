@@ -57,3 +57,15 @@ error: attribute 'system.configurationRevision' already defined at /nix/store/bs
 But that's because I got it wrong- I had `system.configurationRevision` in the
 `nixosSystem` arguments, when it needs to be defined in a module.
 That wound up as `common/version.nix`
+
+### More intermediate results
+
+I tried using `--target-host` and `crossSystem`:
+
+```
+nixpkgs.crossSystem.system = "aarch64-linux"
+```
+
+- which did appear to start up builds, but then failed to compile anything.
+I'm going to try to use `--build-host` to target the build on the target machine;
+with `nixpkgs` at the same version, maybe that will mean we still get lots from cache?
