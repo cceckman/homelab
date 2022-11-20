@@ -9,8 +9,8 @@ I had this working before, roughly, though it seemed a little unstable _after_
 provisioning - since the effective `configuration.nix` file used to build the
 image wasn't on the output. Flakes might make this a little more stable.
 
-I had tried to do something a little fancier, but settled from porting
-[this post by Ana, Hoverbear][hoverbear] to the SD image version, and adding the
+I had tried to do something a little fancier, but settled from porting [this
+post by Ana, Hoverbear][hoverbear] to the SD image version, and adding the
 SSH-able mixin.
 
 I'm still missing one bit: how to make my local (non-NixOS, x86_64) builder
@@ -22,3 +22,38 @@ Maybe it's time for me to set up a local NixOS VM... Or, once I have a NixOS Pi,
 use that for builds.
 
 [hoverbear]: https://hoverbear.org/blog/nix-flake-live-media/
+
+## Episode 2: Upgradeability
+
+As of 9e4ba033, we have a working provisioning-image builder; I can log in to a
+Pi that boots from that image. Now the tricky bit- pivoting that to "maintaining Nix on a running system".
+
+Is it that tricky, though? We do have the [Tweag] guide to help us. We've set
+the "provisioning" image to be its own configuration; maybe this is "just"
+a matter of deploying another configuration stanza, rather than having a whole
+new $something. Let's try it out.
+
+[Tweag]: https://www.tweag.io/blog/2020-07-31-nixos-flakes/
+
+I'd like to be able to do `nixos-rebuild --target-host`, but it
+[looks like that won't cross-compile][issue166838]... unless we're careful
+about [setting `crossSystem`][issue167393] correctly. Let's try that?
+
+[issue166838]: https://github.com/NixOS/nixpkgs/issues/166838
+[issue167393]: https://github.com/NixOS/nixpkgs/pull/167393/files
+
+### Intermediate results
+
+Specifying `system.configurationRevision` per [this guide][Tweag] didn't work well-
+
+```
+∵ nix flake check --show-trace
+warning: Git tree '/home/cceckman/r/github.com/cceckman/homelab' is dirty
+error: attribute 'system.configurationRevision' already defined at /nix/store/bsgikzgvk506r7sjplhrqv23w1spfa79-source/flake.nix:11:9
+
+       at /nix/store/bsgikzgvk506r7sjplhrqv23w1spfa79-source/flake.nix:12:9:
+```
+
+But that's because I got it wrong- I had `system.configurationRevision` in the
+`nixosSystem` arguments, when it needs to be defined in a module.
+That wound up as `common/version.nix`

@@ -1,20 +1,28 @@
-# Builds the RPi provisioning image.
+# Builder for homelab/cloudlab system configurations.
 
-# Flake-based version from https://hoverbear.org/blog/nix-flake-live-media/
+# Flake-based system image builder from https://hoverbear.org/blog/nix-flake-live-media/
+# More info from https://www.tweag.io/blog/2020-07-31-nixos-flakes/
 {
   description = "RPi provisioning image";
   inputs.nixos.url = "github:nixos/nixpkgs/nixos-unstable";
   outputs = { self, nixos }: {
-    nixosConfigurations = {
+    nixosConfigurations = 
+      let rackPi= n: nixos.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          ((import common/rack.nix) n)
+          ((import common/version.nix) { inherit self; inherit nixos; } )
+        ];
+      };
+    in {
       rpiProvisioning = nixos.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
-          "${nixos}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-          common/users.nix
-          common/ssh.nix
-          provisioning/no-sd-compression.nix
+           ((import provisioning/rpi.nix) nixos)
+           ((import common/version.nix) { inherit self; inherit nixos; } )
         ];
       };
+      rack4 = rackPi 4;
     };
   };
 }
