@@ -10,7 +10,7 @@ clean history starting from getting Nix working.
 The `provisioning/` directory contains materials for "provisioning" images-
 unqualified / uncustomized other than to become reachable via SSH (with a set of
 my keys). For instance,
-the first `provisining` target is an SD card image for Raspberry Pis.
+the first `provisioning` target is an SD card image for Raspberry Pis.
 
 From there, we use a combination of scripts and tools to manage nodes.
 I'm going to try using [Nix Flakes], as informed by [this guide][tweag] in part.
