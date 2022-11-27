@@ -5,9 +5,12 @@
 {
   description = "RPi provisioning image";
   inputs.nixos.url = "github:nixos/nixpkgs/nixos-unstable";
-  outputs = { self, nixos }: {
-    nixosConfigurations = 
-      let rackPi= n: nixos.lib.nixosSystem {
+
+  inputs.nixos-wsl.url = "github:nix-community/NixOS-WSL";
+
+  outputs = { self, nixos, nixos-wsl }@args: {
+    nixosConfigurations =
+      let rackPi = n: nixos.lib.nixosSystem {
         system = "aarch64-linux";
         modules = [
           ((import common/rack.nix) n)
@@ -23,6 +26,8 @@
         ];
       };
       rack4 = rackPi 4;
+
+      cromwell-wsl = (import roses/cromwell-wsl.nix) args;
     };
   };
 }

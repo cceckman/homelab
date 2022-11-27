@@ -69,3 +69,27 @@ nixpkgs.crossSystem.system = "aarch64-linux"
 - which did appear to start up builds, but then failed to compile anything.
 I'm going to try to use `--build-host` to target the build on the target machine;
 with `nixpkgs` at the same version, maybe that will mean we still get lots from cache?
+
+### Yet more intermediate results
+
+`--build-host` appears to have no effect. [This thread](https://discourse.nixos.org/t/building-a-flake-based-nixos-system-remotely/11309/2) referes to the wiki for
+"remote builds with flakes appear to be broken". [This](https://github.com/NixOS/nixpkgs/pull/119540)
+is supposed to fix it... am I using that?
+
+So, is there a sensible way I can make my local (non-NixOS) machine crossbuild-enabled?
+
+What goes wrong when:
+
+- No `crossSystem`, no `--build-host`:
+  - `build` is missing an `aarch64` host
+  - `switch` gets `exec format error`
+- No `crossSystem`, `--target-host` and `--build-host` match
+  - `build` exits with status 0
+  - `switch` gets exec format error (from `mktemp`)
+- `crossSystem` is `lib.systems.examples.aarch64-multiplatform`; `--target-host` and `--build-host` match
+  - `build` runs for a while; `nix-store` on the remote eats time
+
+
+In all of the above:
+- no remote builders configured.
+- Flags precede verb (`nixos-reconfigure --target-host ... build`)
