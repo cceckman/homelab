@@ -8,7 +8,7 @@
 
   inputs.nixos-wsl.url = "github:nix-community/NixOS-WSL";
 
-  outputs = { self, nixos, nixos-wsl }@args: {
+  outputs = { self, nixos, nixos-wsl }: {
     nixosConfigurations =
       let rackPi = n: nixos.lib.nixosSystem {
         system = "aarch64-linux";
@@ -27,7 +27,13 @@
       };
       rack4 = rackPi 4;
 
-      cromwell-nix = (import roses/cromwell-nix.nix) args;
+      cromwell-nix = nixos.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          nixos-wsl.nixosModules.wsl
+          ./roses/cromwell-nix.nix
+        ];
+      };
     };
   };
 }

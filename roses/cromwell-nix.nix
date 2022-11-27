@@ -1,10 +1,6 @@
-# NixOS configuration (generator) for my dev laptop.
-{ nixos, nixos-wsl, ... } : {
-  system = "x86_64-linux";
-  modules = [ nixos-wsl.wsl ];
-
+# NixOS module for my dev laptop.
+{ pkgs, ... } : {
   imports = [
-    nixos-wsl.nixosModules.wsl
     ../common/users.nix
   ];
 
@@ -20,4 +16,6 @@
   nix.extraOptions = ''
     experimental-features = nix-command flakes
   '';
+
+  system.stateVersion = "22.05";
 }
