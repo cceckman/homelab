@@ -27,7 +27,7 @@
       };
       rack4 = rackPi 4;
 
-      cromwell-wsl = (import roses/cromwell-wsl.nix) args;
+      cromwell-nix = (import roses/cromwell-nix.nix) args;
     };
   };
 }
