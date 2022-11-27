@@ -15,6 +15,7 @@
         modules = [
           ((import common/rack.nix) n)
           ((import common/version.nix) { inherit self; inherit nixos; } )
+          ./common/utilities.nix
         ];
       };
     in {
@@ -23,6 +24,7 @@
         modules = [
            ((import provisioning/rpi.nix) nixos)
            ((import common/version.nix) { inherit self; inherit nixos; } )
+           ./common/utilities.nix
         ];
       };
       rack4 = rackPi 4;
@@ -31,6 +33,7 @@
         system = "x86_64-linux";
         modules = [
           nixos-wsl.nixosModules.wsl
+          ./common/utilities.nix
           ./roses/cromwell-nix.nix
         ];
       };
