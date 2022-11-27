@@ -17,5 +17,7 @@
     experimental-features = nix-command flakes
   '';
 
+  networking.hostName = "cromwell-nix";
+
   system.stateVersion = "22.05";
 }
