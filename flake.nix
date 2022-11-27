@@ -18,14 +18,14 @@
         ];
       };
     in {
-      rpiProvisioning = nixos.lib.nixosSystem {
-        system = "aarch64-linux";
-        modules = [
-           ((import provisioning/rpi.nix) nixos)
-           ((import common/version.nix) { inherit self; inherit nixos; } )
-        ];
-      };
-      rack4 = rackPi 4;
+    # rpiProvisioning = nixos.lib.nixosSystem {
+    #   system = "aarch64-linux";
+    #   modules = [
+    #      ((import provisioning/rpi.nix) nixos)
+    #      ((import common/version.nix) { inherit self; inherit nixos; } )
+    #   ];
+    # };
+    # rack4 = rackPi 4;
 
       cromwell-nix = nixos.lib.nixosSystem {
         system = "aarch64-linux";
