@@ -21,6 +21,8 @@
   '';
 
   networking.hostName = "cromwell-nix";
+  networking.wireless.userControlled.enable = true;
+  networking.wireless.enable = true;
 
   system.stateVersion = "22.05";
 
