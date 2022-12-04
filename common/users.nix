@@ -7,7 +7,7 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKvBMbXOjD7W/+R7pO+XvXLkyjJMfR1mSoBsLtpFHGts cceckman@cromwell-wsl"
     ];
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "kvm" ];
   };
   security.sudo.wheelNeedsPassword = false;
   users.users.root.openssh.authorizedKeys.keys =
