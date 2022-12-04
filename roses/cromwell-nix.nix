@@ -2,21 +2,8 @@
 { pkgs, ... } : {
   imports = [
     ../common/users.nix
+    ../common/wsl2.nix
   ];
-
-  wsl = {
-    enable = true;
-    wslConf.automount.root = "/mnt";
-    defaultUser = "cceckman";
-    startMenuLaunchers = true;
-    # Per warning on options.wsl.interop:
-    # Need to explicitly register interop if using binfmt.
-    interop.register = true;
-  };
-
-  virtualisation.libvirtd.enable = true;
-  boot.kernelModules = [ "kvm-amd" "kvm-intel" ];
-  security.polkit.enable = true;
 
   # Enable nix flakes
   nix.package = pkgs.nixFlakes;
