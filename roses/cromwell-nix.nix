@@ -14,6 +14,10 @@
     interop.register = true;
   };
 
+  virtualisation.libvirtd.enable = true;
+  boot.kernelModules = [ "kvm-amd" "kvm-intel" ];
+  security.polkit.enable = true;
+
   # Enable nix flakes
   nix.package = pkgs.nixFlakes;
   nix.extraOptions = ''
