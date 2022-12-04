@@ -3,7 +3,7 @@
 # Flake-based system image builder from https://hoverbear.org/blog/nix-flake-live-media/
 # More info from https://www.tweag.io/blog/2020-07-31-nixos-flakes/
 {
-  description = "RPi provisioning image";
+  description = "Homelab machine configurations";
   inputs.nixos.url = "github:nixos/nixpkgs/nixos-unstable";
 
   inputs.nixos-wsl.url = "github:nix-community/NixOS-WSL";
