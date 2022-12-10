@@ -33,7 +33,6 @@
         system = "x86_64-linux";
         modules = [
           nixos-wsl.nixosModules.wsl
-          ./common/utilities.nix
           ./roses/cromwell-nix.nix
         ];
       };

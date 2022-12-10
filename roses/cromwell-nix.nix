@@ -3,6 +3,8 @@
   imports = [
     ../common/users.nix
     ../common/wsl2.nix
+    ../common/utilities.nix
+    ../common/keep.nix
   ];
 
   # Enable nix flakes
