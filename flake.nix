@@ -10,14 +10,16 @@
 
   outputs = { self, nixos, nixos-wsl }: {
     nixosConfigurations =
-      let rackPi = n: nixos.lib.nixosSystem {
+      let rackPi = prev: nixos.lib.nixosSystem ({
         system = "aarch64-linux";
         modules = [
-          ((import common/rack.nix) n)
+          ./common/rpi.nix
+          ./common/users.nix
+          ./common/ssh.nix
           ((import common/version.nix) { inherit self; inherit nixos; } )
           ./common/utilities.nix
         ];
-      };
+      } // prev);
     in {
       rpiProvisioning = nixos.lib.nixosSystem {
         system = "aarch64-linux";
@@ -27,7 +29,10 @@
            ./common/utilities.nix
         ];
       };
-      rack4 = rackPi 4;
+      rack4 = rackPi {
+        networking.hostNmae = "rack4";
+        system.stateVersion = "22.11";
+      };
 
       cromwell-nix = nixos.lib.nixosSystem {
         system = "x86_64-linux";
