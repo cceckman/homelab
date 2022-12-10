@@ -3,6 +3,7 @@
   environment.systemPackages = [
     pkgs.curl
     pkgs.git
+    pkgs.htop
   ];
 
   # Enable nix flakes
