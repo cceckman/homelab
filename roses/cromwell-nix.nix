@@ -7,12 +7,6 @@
     ../common/keep.nix
   ];
 
-  # Enable nix flakes
-  nix.package = pkgs.nixFlakes;
-  nix.extraOptions = ''
-    experimental-features = nix-command flakes
-  '';
-
   networking.hostName = "cromwell-nix";
   networking.wireless.userControlled.enable = true;
   networking.wireless.enable = true;
