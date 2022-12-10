@@ -4,7 +4,7 @@
 # More info from https://www.tweag.io/blog/2020-07-31-nixos-flakes/
 {
   description = "Homelab machine configurations";
-  inputs.nixos.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs.nixos.url = "github:nixos/nixpkgs/22.11";
 
   inputs.nixos-wsl.url = "github:nix-community/NixOS-WSL";
 
