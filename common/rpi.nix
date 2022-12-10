@@ -1,7 +1,5 @@
 # NixOS module for RPi machines.
 { lib, ... }: {
-  # Maybe if we're always building on the remote, it's OK?
-  nixpkgs.crossSystem = lib.systems.examples.aarch64-multiplatform;
   # Does this help? https://github.com/NixOS/nixpkgs/issues/60101
   # nixpkgs.localSystem = { system = "x86_64-linux"; };
 
