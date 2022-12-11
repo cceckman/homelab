@@ -9,6 +9,7 @@
     ];
     extraGroups = [ "wheel" "kvm" "libvirtd" "qemu-libvirtd" ];
   };
+  nix.settings.trusted-users = [ "cceckman" ];
   security.sudo.wheelNeedsPassword = false;
   users.users.root.openssh.authorizedKeys.keys =
       config.users.users.cceckman.openssh.authorizedKeys.keys;
