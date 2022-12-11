@@ -1,7 +1,6 @@
 { lib, config, pkgs, ... } :
 # From the Tailscale blog: https://tailscale.com/blog/nixos-minecraft/
 # Modified to allow injecting the auth key, based on https://nixos.wiki/wiki/NixOS_modules
-
 with lib;
 
 let
@@ -11,9 +10,10 @@ in {
     enable = mkEnableOption "Automatic Tailscale connection, enrollment";
     token = mkOption {
       type = types.str;
-      default = /var/secrets/tailscale-authkey.txt;
+      default = "/var/secrets/tailscale-authkey.txt";
       description = ''
-        Path of a file containing a Tailscale authentication key.
+        (Target machine) path of a file containing a Tailscale authentication
+        key.
         If tailscale-autoconnect is enabled and Tailscale is not already
         authenticated, this token will be read and used to authenticate
         the node(s).
@@ -30,6 +30,16 @@ in {
     # make the tailscale command usable to users
     environment.systemPackages = [ pkgs.tailscale pkgs.jq ];
 
+    # Create a systemd activation:
+    # On presence of an auth key, run the tailscale-autoconnect script.
+    systemd.paths.tailscale-autoconnect = {
+      description = "Path-based trigger to auto-authenticate tailscale";
+      wantedBy = [ "multi-user.target" ];
+      pathConfig = {
+        PathExists = cfg.token;
+      };
+    };
+
     # create a oneshot job to authenticate to Tailscale
     systemd.services.tailscale-autoconnect =
     let
@@ -40,7 +50,6 @@ in {
       # make sure tailscale is running before trying to connect to tailscale
       after = [ "network-pre.target" "tailscale.service" ];
       wants = [ "network-pre.target" "tailscale.service" ];
-      wantedBy = [ "multi-user.target" ];
 
       # set this service as a oneshot job
       serviceConfig.Type = "oneshot";
@@ -52,7 +61,8 @@ in {
 
         # check if we are already authenticated to tailscale
         status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-        if [ $status = "Running" ]; then # if so, then do nothing
+        if [ $status = "Running" ]; then # if so, then remove the token
+          rm ${remotePath}
           exit 0
         fi
 
@@ -70,6 +80,8 @@ in {
 
         # otherwise authenticate with tailscale
         ${tailscale}/bin/tailscale up -authkey "$(cat ${remotePath})"
+        # On success, remove so we don't fire again
+        rm ${remotePath}
       '';
     };
   };

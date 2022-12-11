@@ -18,10 +18,15 @@
             rose = if builtins.pathExists path then [ path ] else [];
           in
         [
-          { networking.hostName = name; }
+          {
+            networking.hostName = name;
+            services.tailscale-autoconnect.enable = true;
+          }
           ./common/rpi.nix
           ./common/users.nix
           ./common/ssh.nix
+          ./common/tailscale.nix
+          ./common/tailscale-autoconnect.nix
           ((import common/version.nix) { inherit self; inherit nixos; } )
           ./common/utilities.nix
         ] ++ rose;
