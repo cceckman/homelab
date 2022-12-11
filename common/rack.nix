@@ -11,6 +11,9 @@
      {
        networking.hostName = name;
        services.tailscale-autoconnect.enable = true;
+       fileSystems."/media/qboot" = {
+         device = "/dev/disk/by-label/QBOOTUSB";
+       };
      }
      ./rpi.nix
      ./users.nix
