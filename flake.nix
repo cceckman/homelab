@@ -10,27 +10,7 @@
 
   outputs = { self, nixos, nixos-wsl }: {
     nixosConfigurations =
-      let rackPi = name: nixos.lib.nixosSystem {
-        system = "aarch64-linux";
-        modules =
-          let
-            path = ./roses/${name}.nix;
-            rose = if builtins.pathExists path then [ path ] else [];
-          in
-        [
-          {
-            networking.hostName = name;
-            services.tailscale-autoconnect.enable = true;
-          }
-          ./common/rpi.nix
-          ./common/users.nix
-          ./common/ssh.nix
-          ./common/tailscale.nix
-          ./common/tailscale-autoconnect.nix
-          ((import common/version.nix) { inherit self; inherit nixos; } )
-          ./common/utilities.nix
-        ] ++ rose;
-      };
+      let rackPi = name: import ./common/rack.nix { inherit name self nixos; };
     in {
       rpiProvisioning = nixos.lib.nixosSystem {
         system = "aarch64-linux";
