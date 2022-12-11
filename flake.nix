@@ -12,14 +12,19 @@
     nixosConfigurations =
       let rackPi = name: nixos.lib.nixosSystem {
         system = "aarch64-linux";
-        modules = [
+        modules =
+          let
+            path = ./roses/${name}.nix;
+            rose = if builtins.pathExists path then [ path ] else [];
+          in
+        [
           { networking.hostName = name; }
           ./common/rpi.nix
           ./common/users.nix
           ./common/ssh.nix
           ((import common/version.nix) { inherit self; inherit nixos; } )
           ./common/utilities.nix
-        ];
+        ] ++ rose;
       };
     in {
       rpiProvisioning = nixos.lib.nixosSystem {
