@@ -1,6 +1,6 @@
 # Flake fragment (not a module!)
 # for racked Raspberry Pis.
-{ self, name, nixos } : nixos.lib.nixosSystem {
+{ self, name, nixos, tsproxy, ... } : nixos.lib.nixosSystem {
    system = "aarch64-linux";
    modules =
      let
@@ -15,6 +15,7 @@
          device = "/dev/disk/by-label/QBOOTUSB";
        };
      }
+     tsproxy.nixosModules."aarch64-linux".default
      ./rpi.nix
      ./users.nix
      ./ssh.nix

@@ -85,7 +85,44 @@
     "root": {
       "inputs": {
         "nixos": "nixos",
-        "nixos-wsl": "nixos-wsl"
+        "nixos-wsl": "nixos-wsl",
+        "tsproxy": "tsproxy"
+      }
+    },
+    "tsproxy": {
+      "inputs": {
+        "nixpkgs": [
+          "nixos"
+        ],
+        "utils": "utils"
+      },
+      "locked": {
+        "lastModified": 1670961957,
+        "narHash": "sha256-L8VyDOOsfKzfd3BVltR3qujlmaKXfoLnJBuKStBuwkY=",
+        "owner": "cceckman",
+        "repo": "tsproxy",
+        "rev": "deae1173bbc445f5e8d2fede8d96f6842df1aaa5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cceckman",
+        "repo": "tsproxy",
+        "type": "github"
+      }
+    },
+    "utils": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
       }
     }
   },

@@ -5,8 +5,10 @@
 
   services.navidrome.enable = true;
   services.navidrome.settings = {
-    Address = "0.0.0.0";
     MusicFolder = "/media/mediahd/Music/AllMusic";
+    ReverseProxyUserHeader = "X-Webauth-User";
+    ReverseProxyWhitelist = "127.0.0.1/32";
+    PrometheusEnabled = true;
   };
 
   # Support for external media drive
@@ -16,4 +18,12 @@
     device = "/dev/disk/by-uuid/5CA43549A4352744";
     options = [ "rw" "noatime" "users" "nofail" "x-systemd.mount-timeout=5s" ];
   };
+  # Proxy to Navidrome
+  services.tsproxy.instances = [
+    {
+      hostname = "navidrome";
+      target = "127.0.0.1:4533";
+      authKeyPath = "/var/secrets/navidrome-proxy-authkey.txt";
+    }
+  ];
 }
