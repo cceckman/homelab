@@ -27,6 +27,8 @@
       };
       rack4 = rackPi "rack4";
 
+      microhost = import ./roses/microhost.nix (args);
+
       cromwell-nix = nixos.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
