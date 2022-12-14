@@ -1,7 +1,20 @@
-{ nixos, ... } @ args : nixos.lib.nixosSystem {
+{ nixos, self, ... } @ args : nixos.lib.nixosSystem {
   system = "x86_64-linux";
-  # Import the virt module from the nixos tree:
+
   modules = [
-    "${nixos}/nixos/modules/virtualisation/google-compute-engine.nix"
+    {
+      networking.hostName = "microhost";
+      services.tailscale-autoconnect.enable = true;
+      system.stateVersion = "22.11";
+    }
+    # Import the virt module from the nixos tree:
+    "${nixos}/nixos/modules/virtualisation/google-compute-image.nix"
+    # And a bunch of standard imports:
+    ./../common/users.nix
+    ./../common/ssh.nix
+    ./../common/tailscale.nix
+    ./../common/tailscale-autoconnect.nix
+    ((import ./../common/version.nix) { inherit self; inherit nixos; })
+    ./../common/utilities.nix
   ];
 }

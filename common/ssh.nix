@@ -5,5 +5,4 @@
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = false;
   services.openssh.kbdInteractiveAuthentication = false;
-  services.openssh.permitRootLogin = "no";
 }
