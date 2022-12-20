@@ -45,6 +45,9 @@
       initialize = true;
       repository = "gs:xueckman-backup:restic/";
       user = "restic";
+      extraBackupArgs = [
+        "--limit-upload=40960" # 2 MiB/s
+      ];
 
      #timerConfig = {
      #  OnCalendar = "03:05";
