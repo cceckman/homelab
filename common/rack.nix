@@ -23,6 +23,7 @@
      ./tailscale-autoconnect.nix
      ((import ./version.nix) { inherit self; inherit nixos; } )
      ./utilities.nix
+     ./tz.nix
    ] ++ rose;
 }
 
