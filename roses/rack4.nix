@@ -49,10 +49,10 @@
         "--limit-upload=40960" # 2 MiB/s
       ];
 
-     #timerConfig = {
-     #  OnCalendar = "03:05";
-     #  RandomizedDelaySec = "2h";
-     #};
+      timerConfig = {
+        OnCalendar = "04:05";
+        RandomizedDelaySec = "2h";
+      };
     };
 
   };
