@@ -1,5 +1,5 @@
 { config, pkgs, ... } : {
-  environment.systemPackages = [ pkgs.vim ];
+  environment.systemPackages = [ pkgs.vim pkgs.restic ];
 
   system.stateVersion = "22.11";
 
