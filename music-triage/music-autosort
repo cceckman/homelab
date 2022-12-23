@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/bash
 #
-# sortmusic.sh
 # Relocate music into the correct folder based on its tags.
+#
 # TODO:
 # The future of this script:
 # - Make a systemd unit that waits for taildrop events, and puts the contents in

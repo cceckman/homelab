@@ -1,4 +1,4 @@
-#! /bin/sh 
+#! /bin/sh
 #
 # Automatically rip a CD into /mnt/mediahd/Music/Incoming.
 set -eux
