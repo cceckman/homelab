@@ -17,19 +17,19 @@
   in {
     # Provide some binary packages for selected system types.
     packages = rec {
-      music-autosort = let
-        script-name = "music-autosort";
-        # writeShellScriptBin attempts to check syntax, but apparently doesn't
-        # know about function definitions?
-        script = pkgs.writeScriptBin script-name (builtins.readFile ./music-autosort);
-        deps = with pkgs; [ coreutils bash ];
-      in pkgs.symlinkJoin {
-        name = script-name;
-        paths = [ script ] ++ deps;
-        buildInputs = [ pkgs.makeWrapper ];
-        postBuild = "wrapProgram $out/bin/${script-name} --prefix PATH : $out/bin";
+      music-autosort = pkgs.buildGoModule {
+        name = "music-autosort";
+        src = ./.;
+        runVend = true;
+        vendorSha256 = "sha256-7PLkIS0qEaTIbq1vsN3bD2tOXNWZfgMu57B58Ihhnyk=";
       };
       default = music-autosort;
     };
+    devShells = {
+      default = pkgs.mkShell {
+        buildInputs = with pkgs; [ go gopls gotools go-tools ffmpeg tageditor delve ];
+      };
+    };
+    # TODO: Have "check" run tests
   });
 }
