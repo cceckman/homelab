@@ -21,16 +21,17 @@
         name = "music-autosort";
         src = ./.;
         runVend = true;
-        vendorSha256 = "sha256-7PLkIS0qEaTIbq1vsN3bD2tOXNWZfgMu57B58Ihhnyk=";
+        vendorSha256 = "sha256-Xwd+M5Mil8yPyiZewmHM7tp1sQQIFZYvRmf+6tNZ3hw=";
       };
       default = music-autosort;
     };
     devShells = {
       default = pkgs.mkShell {
-        buildInputs = with pkgs; [ go gopls gotools go-tools ffmpeg tageditor delve imagemagick ];
+        # Also tageditor - though that isn't available on aarch64
+        buildInputs = with pkgs; [ go gopls gotools go-tools ffmpeg delve imagemagick ];
       };
     };
-    # TODO: Have "check" run tests
-    # TODO: Have a configurable NixOS service
+    nixosModules.default = import ./module.nix;
+    # TODO: Have "check" run tests?
   });
 }
