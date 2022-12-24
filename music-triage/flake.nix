@@ -27,9 +27,10 @@
     };
     devShells = {
       default = pkgs.mkShell {
-        buildInputs = with pkgs; [ go gopls gotools go-tools ffmpeg tageditor delve ];
+        buildInputs = with pkgs; [ go gopls gotools go-tools ffmpeg tageditor delve imagemagick ];
       };
     };
     # TODO: Have "check" run tests
+    # TODO: Have a configurable NixOS service
   });
 }

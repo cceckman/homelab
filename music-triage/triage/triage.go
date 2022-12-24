@@ -92,7 +92,9 @@ func (s *Settings) Run() error {
 		return errs
 	}
 
-	return errs
+	// Finally - prune empty directories in intake.
+	_, err := pruneTree(s.IntakeRoot)
+	return err
 }
 
 // A single file to sort and place
@@ -103,15 +105,15 @@ type TriageFile struct {
 }
 
 // Try to move the file to a new location; on error, try to move to quarantine.
-func (s *TriageFile) tryEmplace() (err error) {
-	err = s.moveToLibrary()
+func (s *TriageFile) tryEmplace() error {
+	err := s.moveToLibrary()
 	if err == nil {
 		return nil
 	}
 
-	log.Printf("could not handle file %q; placing into quarantine: %s", s.IntakePath, err)
+	log.Printf("could not handle file %q; placing into quarantine. error: %s", s.IntakePath, err)
 
-	return move(s.IntakePath, s.QuarantinePath)
+	return move(s.QuarantinePath, s.IntakePath)
 }
 
 // Move the file to the library.
@@ -147,11 +149,8 @@ func (s *TriageFile) moveToLibrary() (err error) {
 	}
 	targetPath := string(b.Bytes())
 
-	// Check that there are no empty path segments:
-	for _, segment := range filepath.SplitList(targetPath) {
-		if segment == "" {
-			return fmt.Errorf("target path %q had an empty segment", targetPath)
-		}
+	if err := s.validTarget(targetPath); err != nil {
+		return fmt.Errorf("generated target path is not valid: %w", err)
 	}
 
 	// Alright, we're good to go.
@@ -160,54 +159,21 @@ func (s *TriageFile) moveToLibrary() (err error) {
 		return fmt.Errorf("could not close original file: %w", err)
 	}
 
-	return move(filepath.Join(s.LibraryRoot, targetPath), s.IntakePath)
+	to := filepath.Join(s.LibraryRoot, targetPath)
+	log.Printf("moving %q to %q", s.IntakePath, to)
+
+	return move(to, s.IntakePath)
 }
 
-// Track is a single file that can be placed into the library.
-type Track struct {
-	tag.Metadata
-	originalFile string
-}
-
-// Returns the album or track artist -
-// album artist if specified, track artist otherwise.
-func (t *Track) AlbumOrTrackArtist() string {
-	if a := t.AlbumArtist(); a != "" {
-		return a
+// Validate: is the generated path valid?
+func (s *Settings) validTarget(path string) error {
+	// Check that there are no empty path segments:
+	segments := strings.Split(filepath.ToSlash(path), "/")
+	for _, segment := range segments {
+		if segment == "" {
+			return fmt.Errorf("target path %q had an empty segment", path)
+		}
 	}
-	return t.Artist()
-}
 
-func (t *Track) Discs() int {
-	_, n := t.Metadata.Disc()
-	return n
-}
-
-func (t *Track) Disc() int {
-	n, _ := t.Metadata.Disc()
-	return n
-}
-
-func (t *Track) ZeroDisc() string {
-	n, _ := t.Metadata.Disc()
-	return fmt.Sprintf("%02d", n)
-}
-
-func (t *Track) Extension() string {
-	return strings.TrimPrefix(filepath.Ext(t.originalFile), ".")
-}
-
-func (t *Track) Track() int {
-	track, _ := t.Metadata.Track()
-	return track
-}
-
-func (t *Track) ZeroTrack() string {
-	track, _ := t.Metadata.Track()
-	return fmt.Sprintf("%02d", track)
-}
-
-func (t *Track) Tracks() int {
-	_, tracks := t.Metadata.Track()
-	return tracks
+	return nil
 }

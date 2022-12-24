@@ -49,7 +49,9 @@ var (
 	targetTemplate = flag.String("targetTemplate", triage.DefaultTemplate, "template (from text/template package) for file paths within library. See --help message for valid substitutions")
 
 	quarantine = flag.String("quarantine", "", "directory to put invalid files into")
-	handleDrm  = flag.Bool("handleDrm", true, "whether DRM-protected files should be placed in -library; if false, DRMed files are placed into -quarantine instead")
+
+	// TODO: Support -handleDrm. It looks like `tag` isn't picking up M4P?
+	// handleDrm  = flag.Bool("handleDrm", true, "whether DRM-protected files should be placed in -library; if false, DRMed files are placed into -quarantine instead")
 )
 
 func main() {
@@ -76,7 +78,8 @@ func main() {
 		IntakeRoot:     path.Clean(*intake),
 		Template:       t,
 	}
-	_ = s
-
-	log.Fatal("unimplemented")
+	if err := s.Run(); err != nil {
+		log.Fatal(err)
+	}
+	log.Print("Done!")
 }
