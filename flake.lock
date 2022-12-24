@@ -55,7 +55,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-r+MI2c7RHeUIF2UJTdryq6+Ksr6OuRNJ+l6dbkVx+90=",
+        "narHash": "sha256-SkWvoQeu0csFmTGIFPCJ0RBrD8t82Z6T5FIfCuhrwh0=",
         "path": "./music-triage",
         "type": "path"
       },

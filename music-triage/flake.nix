@@ -31,7 +31,7 @@
         buildInputs = with pkgs; [ go gopls gotools go-tools ffmpeg delve imagemagick ];
       };
     };
-    nixosModules.default = import ./module.nix;
+    nixosModules.default = import ./module.nix self;
     # TODO: Have "check" run tests?
   });
 }

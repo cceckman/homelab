@@ -1,5 +1,6 @@
-# NixOS module that runs a music-sorting service.
-{ config, pkgs, lib, ... } : let
+# NixOS module (generator) that runs a music-sorting service.
+flake: { config, pkgs, lib, utils, ... } : let
+  package = flake.packages.${pkgs.stdenv.hostPlatform.system}.music-autosort;
   instance-config = lib.types.submodule {
     options = {
       intake = lib.mkOption {
@@ -22,19 +23,24 @@
     };
   };
   instantiate = { intake, quarantine, library, template } : let
-    unit-name = "music-triage-${lib.escapeSystemdPath intake}";
+    unit-name = "music-triage-${utils.escapeSystemdPath intake}";
+    templateFlag = if template == null then "" else ''-targetTemplate "${template}"'';
   in {
     services.${unit-name} = {
       description = "Music triage from ${intake} to ${library}";
-      path = [ "${pkgs.music-triage}" ];
+      path = [ "${package}" ];
       script = ''
-      music-triage -intake "${intake}" -library "${library}" -quarantine "${quarantine}" -targetTemplate "${template}"
+      music-triage -intake "${intake}" -library "${library}" -quarantine "${quarantine}" ${templateFlag}
       '';
       wantedBy = ["multi-user.target"];
     };
-    paths.${unit-name}.pathConfig = {
-      DirectoryNotEmpty = "${intake}";
-      MakeDirectory = true;
+    paths.${unit-name} = {
+      description = "Music triage from ${intake} to ${library}";
+      wantedBy = ["multi-user.target"];
+      pathConfig = {
+        DirectoryNotEmpty = "${intake}";
+        MakeDirectory = true;
+      };
     };
   };
 in {

@@ -18,6 +18,14 @@
     PrometheusEnabled = true;
   };
 
+  services.music-triage.instances = [
+    {
+      intake = "/media/mediahd/Music/Incoming";
+      library = "/media/mediahd/Music/AllMusic";
+      quarantine = "/media/mediahd/Music/Quarantine";
+    }
+  ];
+
   # Proxy to Navidrome from Tailscale
   services.tsproxy.instances = [
     {
