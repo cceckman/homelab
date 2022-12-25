@@ -6,6 +6,7 @@
     ../common/utilities.nix
     ../common/keep.nix
     ../common/tz.nix
+    ../common/time.nix
   ];
 
   networking.hostName = "cromwell-nix";
