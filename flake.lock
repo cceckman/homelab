@@ -132,11 +132,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1671635272,
-        "narHash": "sha256-3HNTR6i023+sdMeA1vDukUjU0l5x/uRDwNu5GwW/oGk=",
+        "lastModified": 1672336663,
+        "narHash": "sha256-/0xqwGCK5Ao/DqfYt6fphkVuHmUpm9BadR2RqrE0SIY=",
         "owner": "cceckman",
         "repo": "tsproxy",
-        "rev": "8228fe789c2ed24cdf7a7e170a5fee19ec673802",
+        "rev": "d929ee551121edf79d16ab2207d45e541089df9d",
         "type": "github"
       },
       "original": {
