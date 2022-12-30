@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixos";
     };
     music-triage = {
-      url = "path:./music-triage";
+      url = "github:cceckman/music-triage";
       inputs.nixpkgs.follows = "nixos";
     };
   };

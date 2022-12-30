@@ -54,14 +54,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-SkWvoQeu0csFmTGIFPCJ0RBrD8t82Z6T5FIfCuhrwh0=",
-        "path": "./music-triage",
-        "type": "path"
+        "lastModified": 1672413646,
+        "narHash": "sha256-qsRAKPVp1SFL1vsiWlJxtZHoOd9/IxdFkhng1SOwkQM=",
+        "owner": "cceckman",
+        "repo": "music-triage",
+        "rev": "2469d642e4de3f46d817dff8d8760e0376f038d0",
+        "type": "github"
       },
       "original": {
-        "path": "./music-triage",
-        "type": "path"
+        "owner": "cceckman",
+        "repo": "music-triage",
+        "type": "github"
       }
     },
     "nixos": {
