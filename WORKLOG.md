@@ -93,3 +93,9 @@ What goes wrong when:
 In all of the above:
 - no remote builders configured.
 - Flags precede verb (`nixos-reconfigure --target-host ... build`)
+
+## Later
+
+Having moved over to NixOS-in-WSL - seems to have done the trick. Still
+crossbuilding but I guess that's just want flakes do.
+

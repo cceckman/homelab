@@ -1,5 +1,6 @@
 # NixOS config for music server and associated connectivity.
-{ ... } : {
+{ ... } :
+  let mediaRoot = "/bigdata/persistent"; in {
   imports = [
     ./nas.nix
   ];
@@ -8,7 +9,7 @@
   # allow tsproxy to authenticate use
   services.navidrome.enable = true;
   services.navidrome.settings = {
-    MusicFolder = "/media/mediahd/Music/AllMusic";
+    MusicFolder = "${mediaRoot}/Music/AllMusic";
     ReverseProxyUserHeader = "X-Webauth-User";
     ReverseProxyWhitelist = "127.0.0.1/32";
     PrometheusEnabled = true;
@@ -17,9 +18,9 @@
   # Automatically consume music
   services.music-triage.instances = [
     {
-      intake = "/media/mediahd/Music/Incoming";
-      library = "/media/mediahd/Music/AllMusic";
-      quarantine = "/media/mediahd/Music/Quarantine";
+      intake = "${mediaRoot}/Music/Incoming";
+      library = "${mediaRoot}/Music/AllMusic";
+      quarantine = "${mediaRoot}/Music/Quarantine";
     }
   ];
 

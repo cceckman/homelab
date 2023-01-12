@@ -56,6 +56,14 @@
         "create mask" = "0644";
         "directory mask" = "0755";
       };
+      bigdata = {
+        path = "/media/bigdata";
+        browseable = "yes";
+        "read only" = "no";
+        "guest ok" = "yes";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+      };
     };
   };
 
@@ -78,6 +86,7 @@
       passwordFile = "/etc/nixos/secrets/restic/password";
       paths = [
         "/media/mediahd"
+        "/bigdata"
       ];
       initialize = true;
       user = "restic";
