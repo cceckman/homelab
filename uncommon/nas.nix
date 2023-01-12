@@ -1,9 +1,11 @@
 # NixOS config for network-attached storage
 { config, pkgs, ... } : {
 
-  # The big storage pool uses ZFS
   environment.systemPackages = [ pkgs.restic pkgs.zfs ];
+
+  # The big storage pool uses ZFS; enable and mount it.
   boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
+  boot.zfs.extraPools = [ "bigdata" ];
 
   # External HDD users ntfs
   boot.supportedFilesystems = [ "ntfs" "zfs" ];
@@ -66,13 +68,18 @@
   users.groups.restic = {};
   services.restic = {
     backups.remote = {
-      passwordFile = "/etc/nixos/secrets/restic/password";
+      # This targets a GCS bucket
+      repository = "gs:xueckman-backup:restic/";
+      # Which means we need an environment file setting the credentials
       environmentFile = "/etc/nixos/secrets/restic/environment";
+      # And we'll also need a credentials file there
+
+      # Contains encryption password
+      passwordFile = "/etc/nixos/secrets/restic/password";
       paths = [
         "/media/mediahd"
       ];
       initialize = true;
-      repository = "gs:xueckman-backup:restic/";
       user = "restic";
       extraBackupArgs = [
         "--limit-upload=40960" # 2 MiB/s
