@@ -1,9 +1,14 @@
 # NixOS config for network-attached storage
 { config, pkgs, ... } : {
-  environment.systemPackages = [ pkgs.restic ];
+
+  # The big storage pool uses ZFS
+  environment.systemPackages = [ pkgs.restic pkgs.zfs ];
+  boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
+
+  # External HDD users ntfs
+  boot.supportedFilesystems = [ "ntfs" "zfs" ];
 
   # Portable media harddrive
-  boot.supportedFilesystems = [ "ntfs" ];
   fileSystems."/media/mediahd" = {
     device = "/dev/disk/by-uuid/5CA43549A4352744";
     options = [ "rw" "noatime" "users" "nofail" "x-systemd.mount-timeout=5s" ];
