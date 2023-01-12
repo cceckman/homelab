@@ -1,9 +1,9 @@
 # Flake fragment (not a module!)
 # for racked Raspberry Pis.
-{ self, name, nixos, ... } @ args : nixos.lib.nixosSystem {
+{ self, nixos, name, ... } @ args : nixos.lib.nixosSystem {
   system = "aarch64-linux";
   specialArgs = args;
-   modules =
+  modules =
      let
        path = ./../roses/${name}.nix;
        rose = if builtins.pathExists path then [ path ] else [];
