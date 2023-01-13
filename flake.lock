@@ -54,11 +54,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1672413646,
-        "narHash": "sha256-qsRAKPVp1SFL1vsiWlJxtZHoOd9/IxdFkhng1SOwkQM=",
+        "lastModified": 1672415906,
+        "narHash": "sha256-HIYBfR2sBkr9LDTh0EnH1mAw4lj7icjLAD7HRA3PC48=",
         "owner": "cceckman",
         "repo": "music-triage",
-        "rev": "2469d642e4de3f46d817dff8d8760e0376f038d0",
+        "rev": "6b808e5bf6b6071a0e33fde7680dbb83ec03bafd",
         "type": "github"
       },
       "original": {
@@ -69,16 +69,16 @@
     },
     "nixos": {
       "locked": {
-        "lastModified": 1669833724,
-        "narHash": "sha256-/HEZNyGbnQecrgJnfE8d0WC5c1xuPSD2LUpB6YXlg4c=",
+        "lastModified": 1673527292,
+        "narHash": "sha256-903EpRSDCfUvic7Hsiqwy+h7zlMTLAUbCXkEGGriCfM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "4d2b37a84fad1091b9de401eb450aae66f1a741e",
+        "rev": "6a3f9996408c970b99b8b992b11bb249d1455b62",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "22.11",
+        "ref": "nixos-22.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -90,11 +90,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1672225470,
-        "narHash": "sha256-CL81URMZdjwCbqYY+WqIZAo1aj9moWNPISJaRw2YwV4=",
+        "lastModified": 1673339198,
+        "narHash": "sha256-5EAIJq89sTFooJ5vhsnaw7mDtKVDICvCv2ul7+BXAgA=",
         "owner": "nix-community",
         "repo": "NixOS-WSL",
-        "rev": "79fa1eb78f746c30e41f1be76a209a407b25dc9d",
+        "rev": "217178edb1127fb41ac4fd534d8a513c3dd3d81b",
         "type": "github"
       },
       "original": {

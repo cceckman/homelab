@@ -5,7 +5,7 @@
 {
   description = "Homelab machine configurations";
   inputs = {
-    nixos.url = "github:nixos/nixpkgs/22.11";
+    nixos.url = "github:nixos/nixpkgs/nixos-22.11";
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     tsproxy = {
       url = "github:cceckman/tsproxy";
