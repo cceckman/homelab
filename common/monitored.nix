@@ -8,8 +8,8 @@
     extraFlags = ["--collector.disable-defaults"];
     enabledCollectors = [
       # Enabled, from the default set:
-      "cpu" "cpufreq" "diskstats" "edac" "exec" "filefd" "filesystem"
-      "hwmon" "loadavg" "meminfo" "netclass" "netdev" "netstat" "os" "thermal"
+      "cpu" "cpufreq" "diskstats" "edac" "filefd" "filesystem"
+      "hwmon" "loadavg" "meminfo" "netclass" "netdev" "netstat" "os"
       "thermal_zone" "time" "timex" "uname" "vmstat" "zfs"
       # And from the non-default set:
       "cgroups" "systemd" "wifi"

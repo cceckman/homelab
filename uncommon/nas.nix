@@ -5,8 +5,18 @@
 
   # The big storage pool uses ZFS; enable and mount it.
   boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
-  boot.zfs.extraPools = [ "bigdata" ];
   boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.devNodes = "/dev/disk/by-id";
+  fileSystems."/bigdata" = {
+    device = "bigdata";
+    fsType = "zfs";
+    options = [
+      "x-systemd.device-timeout=1m"
+      "x-systemd.mount-timeout=5m"
+      "nofail"
+      "x-systemd.automount"
+    ];
+  };
 
   # NAS shares, over Samba.
   # Add a group and user that get access
