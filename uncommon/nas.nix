@@ -68,7 +68,7 @@
         "directory mask" = "0755";
       };
       bigdata = {
-        path = "/media/bigdata";
+        path = "/bigdata";
         browseable = "yes";
         "read only" = "no";
         "guest ok" = "yes";

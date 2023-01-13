@@ -1,6 +1,6 @@
 # NixOS config for music server and associated connectivity.
 { ... } :
-  let mediaRoot = "/bigdata/persistent"; in {
+  let mediaRoot = "/bigdata/perpetual"; in {
   imports = [
     ./nas.nix
   ];
