@@ -1,20 +1,12 @@
 # NixOS config for network-attached storage
 { config, pkgs, ... } : {
 
-  environment.systemPackages = [ pkgs.restic pkgs.zfs ];
+  environment.systemPackages = [ pkgs.restic pkgs.zfs pkgs.file ];
 
   # The big storage pool uses ZFS; enable and mount it.
   boot.kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
   boot.zfs.extraPools = [ "bigdata" ];
-
-  # External HDD users ntfs
-  boot.supportedFilesystems = [ "ntfs" "zfs" ];
-
-  # Portable media harddrive
-  fileSystems."/media/mediahd" = {
-    device = "/dev/disk/by-uuid/5CA43549A4352744";
-    options = [ "rw" "noatime" "users" "nofail" "x-systemd.mount-timeout=5s" ];
-  };
+  boot.supportedFilesystems = [ "zfs" ];
 
   # NAS shares, over Samba.
   # Add a group and user that get access
@@ -59,14 +51,6 @@
       map to guest = bad user
     '';
     shares = {
-      media = {
-        path = "/media/mediahd";
-        browseable = "yes";
-        "read only" = "no";
-        "guest ok" = "yes";
-        "create mask" = "0644";
-        "directory mask" = "0755";
-      };
       bigdata = {
         path = "/bigdata";
         browseable = "yes";
@@ -96,8 +80,7 @@
       # Contains encryption password
       passwordFile = "/etc/nixos/secrets/restic/password";
       paths = [
-        "/media/mediahd"
-        "/bigdata"
+        "/bigdata/perpetual"
       ];
       initialize = true;
       user = "restic";
