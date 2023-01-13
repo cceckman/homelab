@@ -16,7 +16,18 @@
     options = [ "rw" "noatime" "users" "nofail" "x-systemd.mount-timeout=5s" ];
   };
 
-  # NAS shares, over Samba
+  # NAS shares, over Samba.
+  # Add a group and user that get access
+  users.groups.shared-disks = {};
+  users.groups.samba-guest = {};
+  users.users.samba-guest = {
+    isSystemUser = true;
+    home = "/home/samba-guest";
+    extraGroups = ["shared-disks"];
+    description = "Samba guest account";
+    group = "samba-guest";
+  };
+
   networking.firewall.enable = true;
   networking.firewall.allowPing = true;
   services.samba.openFirewall = true;
@@ -44,7 +55,7 @@
       # fd7a:115c:a1e0:ab12::/64 is what Tailscale uses for IPv6
       hosts allow = 100.0.0.0/8, 127.0.0.1, localhost, fd7a:115c:a1e0:ab12::/64
       hosts deny = 0.0.0.0/0
-      guest account = nobody
+      guest account = samba-guest
       map to guest = bad user
     '';
     shares = {
