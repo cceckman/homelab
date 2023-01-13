@@ -17,6 +17,7 @@
        };
      }
      ./rpi.nix
+     ./monitored.nix
      ./users.nix
      ./ssh.nix
      ./tailscale.nix
