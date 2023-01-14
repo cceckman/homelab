@@ -3,6 +3,7 @@
 let
   promStateInVarLib = "prometheus";
   promStateTarget = "/media/qboot/prometheus";
+  promPort = 9001;
 in {
   # Keep the Prometheus state on an external storage, not the root partition.
   system.activationScripts = {
@@ -16,7 +17,7 @@ in {
   services.prometheus = {
     enable = true;
     stateDir = promStateInVarLib;
-    port = 9001;
+    port = promPort;
     scrapeConfigs = [ {
       job_name = "node_exporter";
       dns_sd_configs = [{
@@ -38,7 +39,12 @@ in {
           target_label = "node";
         }
       ];
-    }];
+    }
+    {
+      job_name = "prometheus";
+      static_configs = [{ targets = ["localhost:${toString promPort}"]; }];
+    }
+  ];
     remoteWrite = [{
       url = "https://prometheus-us-central1.grafana.net/api/prom/push";
       basic_auth = {
