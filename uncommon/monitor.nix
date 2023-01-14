@@ -26,7 +26,7 @@ in {
           "rack11"
         ];
         port = 9100;
-        type = "AAAA";
+        type = "A";
       }];
       relabel_configs = [
         {

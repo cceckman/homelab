@@ -4,7 +4,7 @@
     pkgs.curl
     pkgs.git
     pkgs.htop
-    pkgs.imagemagick
+    pkgs.dig
   ];
 
   # Enable nix flakes
