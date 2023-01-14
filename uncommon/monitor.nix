@@ -51,6 +51,12 @@ in {
         username = "54857";
         password_file = "${promStateTarget}/key.txt";
       };
+      queue_config = rec {
+        max_backoff = "1s";
+        max_samples_per_send = 4096;
+        max_shards = 512;
+        capacity = max_samples_per_send * 8;
+      };
     }];
   };
 }
