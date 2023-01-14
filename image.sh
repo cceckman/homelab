@@ -12,4 +12,5 @@ fi
 set -eu
 
 RESULT="$(nix build --no-link --print-out-paths '.#nixosConfigurations.'"$TARGET".config.system.build.sdImage)"
+rm -f "${TARGET}.img"
 cp "$RESULT"/sd-image/*.img "${TARGET}.img"

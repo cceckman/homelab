@@ -21,6 +21,7 @@
     nixosConfigurations =
       let rackPi = name: import ./common/rack.nix (args // { inherit name; });
     in {
+      rack3 = rackPi "rack3";
       rack4 = rackPi "rack4";
 
       cromwell-nix = nixos.lib.nixosSystem {
