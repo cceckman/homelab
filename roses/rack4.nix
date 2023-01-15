@@ -1,9 +1,12 @@
-{ config, pkgs, tsproxy, music-triage, ... } : {
+{ config, pkgs, ... } : {
   imports = [
     ../uncommon/music.nix
-     tsproxy.nixosModules."aarch64-linux".default
-     music-triage.nixosModules."aarch64-linux".default
-   ];
+  ];
+
+  services.cceckman-musicserver = {
+    enable = true;
+    musicRoot = "${config.services.cceckman-nas.mountpoint}/perpetual/Music";
+  };
 
   networking.hostId = "9274e809";
   environment.systemPackages = [ pkgs.vim ];

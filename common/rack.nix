@@ -16,6 +16,7 @@
          device = "/dev/disk/by-label/QBOOTUSB";
        };
      }
+     ./nas.nix
      ./rpi.nix
      ./monitored.nix
      ./users.nix
