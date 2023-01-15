@@ -9,14 +9,16 @@
        rose = if builtins.pathExists path then [ path ] else [];
      in
    [
-     {
+     ({ pkgs, ... }:  {
        networking.hostName = name;
        services.tailscale-autoconnect.enable = true;
        fileSystems."/media/qboot" = {
          device = "/dev/disk/by-label/QBOOTUSB";
        };
-     }
+      environment.systemPackages = [ pkgs.vim ];
+     })
      ./nas.nix
+     ../uncommon/music.nix
      ./rpi.nix
      ./monitored.nix
      ./users.nix

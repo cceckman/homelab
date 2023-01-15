@@ -11,7 +11,7 @@ in {
   options.services.cceckman-musicserver = {
     host = lib.mkOption {
       type = lib.types.str;
-      default = "rack4";
+      default = "rack3";
       description = "hostname of the music server";
     };
     musicRoot = lib.mkOption {
