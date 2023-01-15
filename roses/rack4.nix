@@ -4,7 +4,6 @@
   ];
 
   services.cceckman-musicserver = {
-    enable = true;
     musicRoot = "${config.services.cceckman-nas.mountpoint}/perpetual/Music";
   };
 

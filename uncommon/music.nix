@@ -9,14 +9,18 @@ in {
   ];
 
   options.services.cceckman-musicserver = {
-    enable = lib.mkEnableOption "Music server and associated programs";
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "rack4";
+      description = "hostname of the music server";
+    };
     musicRoot = lib.mkOption {
       type = lib.types.str;
       default = "";
       description = "root of the music library";
     };
   };
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (config.networking.hostName == cfg.host) {
     # Enable Navidrome music server;
     # allow tsproxy to authenticate use
     services.navidrome.enable = true;
@@ -25,6 +29,10 @@ in {
       ReverseProxyUserHeader = "X-Webauth-User";
       ReverseProxyWhitelist = "127.0.0.1/32";
       PrometheusEnabled = true;
+      # We're on a low-memory machine; keep caches small.
+      TranscodingCacheSize = "50MB";
+      ImageCacheSize = "10MB";
+      Prometheus.Enabled = true;
     };
 
     # Automatically consume music

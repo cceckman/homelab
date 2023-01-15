@@ -5,6 +5,9 @@ let
   promStateTarget = "/media/qboot/prometheus";
   promPort = 9001;
 in {
+  imports = [
+    ./music.nix
+  ];
   # Keep the Prometheus state on an external storage, not the root partition.
   system.activationScripts = {
     linkPrometheus = ''
@@ -43,6 +46,10 @@ in {
     {
       job_name = "prometheus";
       static_configs = [{ targets = ["localhost:${toString promPort}"]; }];
+    }
+    {
+      job_name = "navidrome";
+      static_configs = [{ targets = [ "navidrome.monkey-heptatonic.ts.net" ]; }];
     }
   ];
     remoteWrite = [{
