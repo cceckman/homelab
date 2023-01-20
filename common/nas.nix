@@ -122,6 +122,10 @@ in {
           user = "restic";
           extraBackupArgs = [
             "--limit-upload=40960" # 2 MiB/s
+            # Allow restic to use a cache; put it on the same bigdata volume
+            # though obviously not in the backed-up path!
+            "--cache-dir ${cfg.mountpoint}/.cache/restic"
+            "--cleanup-cache"
           ];
 
           timerConfig = {
