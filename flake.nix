@@ -23,6 +23,7 @@
     in {
       rack3 = rackPi "rack3";
       rack4 = rackPi "rack4";
+      clock = rackPi "clock";
 
       cromwell-nix = nixos.lib.nixosSystem {
         system = "x86_64-linux";

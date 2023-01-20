@@ -5,6 +5,7 @@
     pkgs.git
     pkgs.htop
     pkgs.dig
+    pkgs.xz
   ];
 
   # Enable nix flakes
