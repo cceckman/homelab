@@ -82,6 +82,9 @@ in {
           hosts deny = 0.0.0.0/0
           guest account = samba-guest
           map to guest = bad user
+
+          # Help debug issues:
+          # log level = 3
         '';
         shares = {
           bigdata = {
