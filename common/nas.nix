@@ -34,6 +34,12 @@ in {
           "x-systemd.automount"
         ];
       };
+      # ZFS wants to use a lot of memory; limit it a bit.
+      boot.modprobeConfig.enable = true;
+      boot.extraModprobeConfig = ''
+        # Limit ARC size to 128MiB, to run safely on small machines
+        options zfs zfs_arc_max=${builtins.toString (128 * 1024 * 1024)}
+      '';
 
       # NAS shares, over Samba.
       # Add a group and user that get access
