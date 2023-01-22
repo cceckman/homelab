@@ -17,7 +17,7 @@
        };
        swapDevices = [{
          device = "/media/qboot/swapfile";
-         size = 2048;
+         size = 128;
          # Don't really want unencrypted memory contents on a persistent device.
          randomEncryption.enable = true;
        }];
