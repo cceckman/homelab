@@ -43,9 +43,14 @@ in {
 
       # NAS shares, over Samba.
       # Add a group and user that get access
-      users.groups.shared-disks = {};
-      users.groups.samba-guest = {};
+      users.groups.shared-disks = {
+        gid = 994;
+      };
+      users.groups.samba-guest = {
+        gid = 995;
+      };
       users.users.samba-guest = {
+        uid = 995;
         isSystemUser = true;
         home = "/home/samba-guest";
         extraGroups = ["shared-disks"];
@@ -103,8 +108,13 @@ in {
         isSystemUser = true;
         description  = "Restic backups user";
         group = "restic";
+        # Need stable UID/GID for permissions to stick.
+        # Note: the actual install may use a different name for this...
+        uid = config.ids.uids.restic;
       };
-      users.groups.restic = {};
+      users.groups.restic = {
+        gid = config.ids.gids.restic;
+      };
       services.restic = {
         backups.remote = {
           # This targets a GCS bucket
