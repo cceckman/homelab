@@ -34,8 +34,8 @@ in {
       ReverseProxyWhitelist = "127.0.0.1/32";
       PrometheusEnabled = true;
       # We're on a low-memory machine; keep caches small.
-      TranscodingCacheSize = "50MB";
-      ImageCacheSize = "10MB";
+      TranscodingCacheSize = "0";
+      ImageCacheSize = "0";
       Prometheus.Enabled = true;
     };
 
