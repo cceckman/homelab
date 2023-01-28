@@ -11,7 +11,8 @@ DO_PASSWD=false
 DO_TSUP=false
 DO_SSH=false
 
-while (( "$#" )) do
+while (( "$#" ))
+do
   case "$1" in
     "--passwd")
       DO_PASSWD=true
@@ -21,8 +22,7 @@ while (( "$#" )) do
       ;;
     "--ssh")
       DO_SSH=true
-      SSH_URL="$2"
-      shift
+      SSH_URL="https://raw.githubusercontent.com/cceckman/homelab/main/helpers/deck/id_deck.pub"
       ;;
     *)
       echo >&2 "Unrecognized argument $1"
@@ -113,9 +113,6 @@ echo >&2 "If updating, reboot or run the following to finish the process: sudo s
 }
 
 do_ssh() {
-  echo >&2 "SSH reconfiguration not supported (yet)"
-  exit 1
-
   pushd . >/dev/null
   tmp_dir="$(mktemp -d)"
   cd "$tmp_dir"
