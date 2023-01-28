@@ -73,6 +73,9 @@ in {
         enable = true;
         securityType = "user";
         extraConfig = ''
+          invalid users = root bin daemon adm sync shutdown halt mail news \
+            uucp operator restic
+
           workgroup = WORKGROUP
           server string = ${config.networking.hostName}
           netbios name = ${config.networking.hostName}
@@ -85,7 +88,6 @@ in {
           # fd7a:115c:a1e0:ab12::/64 is what Tailscale uses for IPv6
           hosts allow = 100.0.0.0/8, 127.0.0.1, localhost, fd7a:115c:a1e0:ab12::/64
           hosts deny = 0.0.0.0/0
-          guest account = samba-guest
           map to guest = bad user
 
           # Help debug issues:
@@ -96,7 +98,12 @@ in {
             path = "${cfg.mountpoint}";
             browseable = "yes";
             "read only" = "no";
+            # "Guest only" means that normal login won't work- and therefore
+            # won't be requested?
+            # https://www.samba.org/samba/docs/using_samba/ch09.html
             "guest ok" = "yes";
+            "guest only" = "yes";
+            "guest account" = "samba-guest";
             "create mask" = "0644";
             "directory mask" = "0755";
           };
