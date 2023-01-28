@@ -90,6 +90,10 @@ in {
           hosts deny = 0.0.0.0/0
           guest account = samba-guest
           map to guest = bad user
+          case sensitive = True
+          default case = lower
+          preserve case = yes
+          short preserve case = yes
 
           # Help debug issues:
           # log level = 3
