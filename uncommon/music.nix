@@ -1,14 +1,11 @@
 # NixOS config for music server and associated connectivity.
 { config, options, lib, tsproxy, music-triage, ... } : let
   cfg = config.services.cceckman-musicserver;
-  incoming = "${cfg.musicRoot}/Incoming";
   library = "${cfg.musicRoot}/AllMusic";
-  quarantine = "${cfg.musicRoot}/Quarantine";
 in {
   imports = [
     ../common/nas.nix
     tsproxy.nixosModules."aarch64-linux".default
-    music-triage.nixosModules."aarch64-linux".default
   ];
 
   options.services.cceckman-musicserver = {
@@ -43,15 +40,6 @@ in {
     # The test - will ? Maybe? - trigger systemd's automount.
     systemd.services.navidrome.unitConfig.ConditionPathExists =
       lib.mkForce "${cfg.musicRoot}";
-
-    # Automatically consume music
-    services.music-triage.instances = [
-      {
-        intake = incoming;
-        inherit library;
-        inherit quarantine;
-      }
-    ];
 
     # Proxy to Navidrome from Tailscale
     services.tsproxy.instances = [
