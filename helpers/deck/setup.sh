@@ -102,12 +102,13 @@ sudo cp -rf tailscale /var/lib/extensions/
 popd > /dev/null
 sudo rm -rf "${dir}"
 
+# Something about this is wonky... some "builtin" units disappear on activation
 sudo systemctl enable systemd-sysext --now
-sudo systemd-sysext refresh > /dev/null 2>&1
+sudo systemd-sysext merge 2>&1
 sudo systemctl daemon-reload > /dev/null
 
 sudo systemctl enable tailscaled --now
-sudo tailscale up --qr --operator=deck --ssh
+sudo tailscale up --qr --operator=deck
 
 echo >&2 "done."
 echo >&2 "If updating, reboot or run the following to finish the process: sudo systemctl restart tailscaled"

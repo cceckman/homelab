@@ -103,6 +103,7 @@ in {
             path = "${cfg.mountpoint}";
             browseable = "yes";
             "read only" = "no";
+            "force user" = "samba-guest";
             # "Guest only" means that normal login won't work- and therefore
             # won't be requested?
             # https://www.samba.org/samba/docs/using_samba/ch09.html
