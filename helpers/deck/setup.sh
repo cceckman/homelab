@@ -80,7 +80,8 @@ cp -vrf $tar_dir/tailscale tailscale/usr/bin/tailscale
 cp -vrf $tar_dir/tailscaled tailscale/usr/sbin/tailscaled
 cp -vrf $tar_dir/systemd/tailscaled.service tailscale/usr/lib/systemd/system/tailscaled.service
 sed -i 's/--port.*//g' tailscale/usr/lib/systemd/system/tailscaled.service
-
+sudo mkdir -p /etc/default
+sudo touch /etc/default/tailscaled
 
 # write a systemd extension-release file
 cat <<EOF >> tailscale/usr/lib/extension-release.d/extension-release.tailscale
