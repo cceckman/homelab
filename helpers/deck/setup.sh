@@ -54,18 +54,18 @@ pushd . > /dev/null
 dir="$(mktemp -d)"
 cd "${dir}"
 
-echo >&2 -n "Installing Tailscale: Getting version..."
+echo >&2 "Installing Tailscale: Getting version..."
 
 # get info for the latest version of Tailscale
 tarball="$(curl -s 'https://pkgs.tailscale.com/stable/?mode=json' | jq -r .Tarballs.amd64)"
 version="$(echo ${tarball} | cut -d_ -f2)"
 
-echo >&2 -n "Got Tailscale version ${version}. Downloading..."
+echo >&2 "Got Tailscale version ${version}. Downloading..."
 
 # download the Tailscale package itself
 curl -s "https://pkgs.tailscale.com/stable/${tarball}" -o tailscale.tgz
 
-echo >&2 -n "done. Installing..."
+echo >&2 "done. Installing..."
 
 # extract the tailscale binaries
 tar xzf tailscale.tgz
@@ -86,7 +86,7 @@ sed -i 's/--port.*//g' tailscale/usr/lib/systemd/system/tailscaled.service
 cat <<EOF >> tailscale/usr/lib/extension-release.d/extension-release.tailscale
 SYSEXT_LEVEL=1.0
 ID=steamos
-VERSION_ID=${VERSION_ID}"
+VERSION_ID=${VERSION_ID}
 EOF
 
 # We don't want these owned by 'deck' in the extension
@@ -99,7 +99,7 @@ sudo cp -rf tailscale /var/lib/extensions/
 
 # return to our original directory (silently) and clean up
 popd > /dev/null
-rm -rf "${dir}"
+sudo rm -rf "${dir}"
 
 sudo systemctl enable systemd-sysext --now
 sudo systemd-sysext refresh > /dev/null 2>&1
