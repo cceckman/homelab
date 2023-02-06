@@ -74,69 +74,13 @@ in {
 
       # NAS shares, over NFS.
       services.nfs.server.enable = true;
+      fileSystems."/export/bigdata" = {
+        device = "/mnt/bigdata";
+        options = [ "bind" ];
+      };
       services.nfs.server.exports = ''
-      ${cfg.mountpoint} 100.0.0.0/8(rw,anonuid=${builtins.toString guest-uid},anongid=${builtins.toString guest-gid},all_squash)
+      /export/bigdata 100.0.0.0/8(rw,anonuid=${builtins.toString guest-uid},anongid=${builtins.toString guest-gid},all_squash,insecure)
       '';
-
-      # NAS shares, over Samba.
-      services.samba.openFirewall = true;
-      services.samba-wsdd.enable = true; # make shares visible for windows 10 clients
-      services.samba = {
-        enable = true;
-        securityType = "user";
-        extraConfig = ''
-          invalid users = root bin daemon adm sync shutdown halt mail news \
-            uucp operator restic
-
-          workgroup = WORKGROUP
-          server string = ${config.networking.hostName}
-          netbios name = ${config.networking.hostName}
-          security = user
-          #use sendfile = yes
-          #max protocol = smb2
-          # note: localhost is the ipv6 localhost ::1
-          # https://tailscale.com/kb/1033/ip-and-dns-addresses/
-          # 100/8 is what Tailscale uses for IPv4 NAT
-          # fd7a:115c:a1e0:ab12::/64 is what Tailscale uses for IPv6
-          hosts allow = 100.0.0.0/8, 127.0.0.1, localhost, fd7a:115c:a1e0:ab12::/64
-          hosts deny = 0.0.0.0/0
-          guest account = samba-guest
-          map to guest = bad user
-
-          # Attempt to preserve Unix naming
-          case sensitive = True
-          default case = lower
-          preserve case = yes
-          short preserve case = yes
-          mangled names = no
-          dos charset = UTF-8
-          unix charset = UTF-8
-
-          # Help debug issues:
-          # log level = 3
-        '';
-        shares = {
-          bigdata = {
-            path = "${cfg.mountpoint}";
-            browseable = "yes";
-            "read only" = "no";
-            "force user" = "samba-guest";
-            # "Guest only" means that normal login won't work- and therefore
-            # won't be requested?
-            # https://www.samba.org/samba/docs/using_samba/ch09.html
-            "guest ok" = "yes";
-            "guest only" = "yes";
-            "create mask" = "0644";
-            "directory mask" = "0755";
-          };
-        };
-      };
-      # Let spouse access
-      users.users.qclairex = {
-        isSystemUser = false;
-        group = "users";
-        uid = 123;
-      };
 
       # Remote backups
       users.users.restic = {
@@ -184,16 +128,13 @@ in {
     # Client fragment:
     (lib.mkIf (config.networking.hostName != cfg.host) {
       # Mount bigdata
-      environment.systemPackages = [ pkgs.cifs-utils ];
       fileSystems."${cfg.mountpoint}" = {
-        device = "//${cfg.host}.monkey-heptatonic.ts.net/bigdata";
-        fsType = "cifs";
+        device = "${cfg.host}.monkey-heptatonic.ts.net:/export/bigdata";
+        fsType = "nfs";
         options = let
           # this line prevents hanging on network split
           automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
-          user_opts = "uid=1000,gid=100";
-          auth_opts = "password=";
-        in ["${automount_opts},${user_opts},${auth_opts}"];
+        in ["${automount_opts}"];
       };
     })
   ];
