@@ -1,6 +1,8 @@
 # Common (client & server) fragment for network-attached storage.
 { config, lib, pkgs, ... } : let
   cfg = config.services.cceckman-nas;
+  guest-uid = 995;
+  guest-gid = 995;
 in {
   options.services.cceckman-nas = {
     mountpoint = lib.mkOption {
@@ -41,16 +43,16 @@ in {
         options zfs zfs_arc_max=${builtins.toString (128 * 1024 * 1024)}
       '';
 
-      # NAS shares, over Samba.
+      # Set up permissions:
       # Add a group and user that get access
       users.groups.shared-disks = {
         gid = 994;
       };
       users.groups.samba-guest = {
-        gid = 995;
+        gid = guest-gid;
       };
       users.users.samba-guest = {
-        uid = 995;
+        uid = guest-uid;
         isSystemUser = true;
         home = "/home/samba-guest";
         extraGroups = ["shared-disks"];
@@ -58,17 +60,27 @@ in {
         group = "samba-guest";
       };
 
+      # Network access
       networking.firewall.enable = true;
       networking.firewall.allowPing = true;
-      services.samba.openFirewall = true;
-      services.samba-wsdd.enable = true; # make shares visible for windows 10 clients
       networking.firewall.allowedTCPPorts = [
-        5357 # wsdd
-        22 # SSH
+        5357  # wsdd
+        22    # SSH
+        2049  # NFS
       ];
       networking.firewall.allowedUDPPorts = [
         3702 # wsdd
       ];
+
+      # NAS shares, over NFS.
+      services.nfs.server.enable = true;
+      services.nfs.server.exports = ''
+      ${cfg.mountpoint} 100.0.0.0/8(rw,anonuid=${builtins.toString guest-uid},anongid=${builtins.toString guest-gid},all_squash)
+      '';
+
+      # NAS shares, over Samba.
+      services.samba.openFirewall = true;
+      services.samba-wsdd.enable = true; # make shares visible for windows 10 clients
       services.samba = {
         enable = true;
         securityType = "user";
@@ -90,10 +102,15 @@ in {
           hosts deny = 0.0.0.0/0
           guest account = samba-guest
           map to guest = bad user
+
+          # Attempt to preserve Unix naming
           case sensitive = True
           default case = lower
           preserve case = yes
           short preserve case = yes
+          mangled names = no
+          dos charset = UTF-8
+          unix charset = UTF-8
 
           # Help debug issues:
           # log level = 3
@@ -126,6 +143,7 @@ in {
         isSystemUser = true;
         description  = "Restic backups user";
         group = "restic";
+        extraGroups = ["shared-disks"];
         # Need stable UID/GID for permissions to stick.
         # Note: the actual install may use a different name for this...
         uid = config.ids.uids.restic;
