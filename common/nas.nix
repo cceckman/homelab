@@ -78,8 +78,14 @@ in {
         device = "/mnt/bigdata";
         options = [ "bind" ];
       };
+      # Even with this, may need to set some registry settings to avoid Windows
+      # reporting as "read-only":
+      # https://superuser.com/questions/103970/how-to-set-identity-for-windows-client-for-nfs-without-identity-server
+      # With those keys set to match guest-uid/guest-gid, Windows recognizes
+      # itself as having "owners" permissions, and correctly reports !Read-Only
+      # in Explorer
       services.nfs.server.exports = ''
-      /export/bigdata 100.0.0.0/8(rw,anonuid=${builtins.toString guest-uid},anongid=${builtins.toString guest-gid},all_squash,insecure)
+      /export/bigdata 100.0.0.0/8(rw,all_squash,anonuid=${builtins.toString guest-uid},anongid=${builtins.toString guest-gid},insecure)
       '';
 
       # Remote backups
