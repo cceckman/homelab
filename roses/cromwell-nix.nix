@@ -2,6 +2,7 @@
 { pkgs, ... } : {
   imports = [
     ../common/keep.nix
+    ../uncommon/desktop.nix
     ../common/nas.nix
     ../common/time.nix
     ../common/tz.nix
