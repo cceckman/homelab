@@ -37,9 +37,10 @@ in {
     };
 
     # We want to try-to start these units only if the path actually exists.
-    # The test - will ? Maybe? - trigger systemd's automount.
-    systemd.services.navidrome.unitConfig.ConditionPathExists =
-      lib.mkForce "${cfg.musicRoot}";
+    # But this doesn't work - testing the condition doesn't trigger the
+    # automount.
+    # systemd.services.navidrome.unitConfig.ConditionPathExists =
+    #   lib.mkForce "${cfg.musicRoot}";
 
     # Proxy to Navidrome from Tailscale
     services.tsproxy.instances = [
