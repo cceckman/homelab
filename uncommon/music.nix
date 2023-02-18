@@ -22,6 +22,11 @@ in {
     rip = lib.mkEnableOption "automatically rip CDs";
   };
   config = lib.mkIf (config.networking.hostName == cfg.host) {
+    # Use an updated Navidrome fork, with a pprof handler, to debug
+    nixpkgs.overlays = [
+      (import ../overlays/navidrome.nix)
+    ];
+
     # Enable Navidrome music server;
     # allow tsproxy to authenticate use
     services.navidrome.enable = true;
