@@ -15,13 +15,7 @@
        fileSystems."/media/qboot" = {
          device = "/dev/disk/by-label/QBOOTUSB";
        };
-       swapDevices = [{
-         device = "/media/qboot/swapfile";
-         size = 64; # Can have a little swap, as a treat
-         # Don't really want unencrypted memory contents on a persistent device.
-         randomEncryption.enable = true;
-       }];
-      environment.systemPackages = [ pkgs.vim ];
+       environment.systemPackages = [ pkgs.vim ];
      })
      ./nas.nix
      ../uncommon/music.nix
