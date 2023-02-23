@@ -10,6 +10,7 @@ in {
   imports = [
     music-triage.nixosModules."aarch64-linux".default
     ../uncommon/music.nix
+    ../uncommon/monitor.nix
   ];
 
   # Automatically consume music. systemd path units only work on the local host,

@@ -1,6 +1,6 @@
 { config, ... } : {
   imports = [
-    ../uncommon/monitor.nix
+    ../uncommon/music.nix
   ];
 
   services.cceckman-musicserver = {
