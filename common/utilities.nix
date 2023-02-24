@@ -6,6 +6,7 @@
     pkgs.htop
     pkgs.dig
     pkgs.xz
+    pkgs.at
   ];
 
   # Enable nix flakes
