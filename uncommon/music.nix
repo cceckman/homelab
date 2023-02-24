@@ -1,5 +1,5 @@
 # NixOS config for music server and associated connectivity.
-{ config, options, lib, tsproxy, ... } : let
+{ config, options, lib, tsproxy, pkgs, ... } : let
   cfg = config.services.cceckman-musicserver;
   library = "${cfg.musicRoot}/AllMusic";
 in {
@@ -55,6 +55,30 @@ in {
         authKeyPath = "/var/secrets/navidrome-proxy-authkey.txt";
       }
     ];
+
+    # Debugging memory increases:
+    systemd.timers."navidrome-container-monitor" = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+          OnCalendar = "hourly";
+          Unit = "navidrome-container-monitor.service";
+        };
+    };
+
+    systemd.services."navidrome-container-monitor" = {
+      script = ''
+        set -eu
+        ${pkgs.coreutils}/bin/date >>/tmp/navidrome-container-monitor.log
+        ${pkgs.systemd}/bin/systemd-cgtop system.slice/navidrome.service \
+          >>/tmp/navidrome-container-monitor.log
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        User= "root";
+      };
+    };
+
   };
+
 }
 
