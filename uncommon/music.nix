@@ -1,5 +1,5 @@
 # NixOS config for music server and associated connectivity.
-{ config, options, lib, tsproxy, music-triage, ... } : let
+{ config, options, lib, tsproxy, ... } : let
   cfg = config.services.cceckman-musicserver;
   library = "${cfg.musicRoot}/AllMusic";
 in {

@@ -11,10 +11,6 @@
       url = "github:cceckman/tsproxy";
       inputs.nixpkgs.follows = "nixos";
     };
-    music-triage = {
-      url = "github:cceckman/music-triage";
-      inputs.nixpkgs.follows = "nixos";
-    };
   };
 
   outputs = { self, nixos, nixos-wsl, tsproxy, ... } @ args: {

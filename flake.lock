@@ -31,42 +31,6 @@
         "type": "github"
       }
     },
-    "flake-utils_2": {
-      "locked": {
-        "lastModified": 1667395993,
-        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "music-triage": {
-      "inputs": {
-        "flake-utils": "flake-utils",
-        "nixpkgs": [
-          "nixos"
-        ]
-      },
-      "locked": {
-        "lastModified": 1672415906,
-        "narHash": "sha256-HIYBfR2sBkr9LDTh0EnH1mAw4lj7icjLAD7HRA3PC48=",
-        "owner": "cceckman",
-        "repo": "music-triage",
-        "rev": "6b808e5bf6b6071a0e33fde7680dbb83ec03bafd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "cceckman",
-        "repo": "music-triage",
-        "type": "github"
-      }
-    },
     "nixos": {
       "locked": {
         "lastModified": 1674868155,
@@ -86,7 +50,7 @@
     "nixos-wsl": {
       "inputs": {
         "flake-compat": "flake-compat",
-        "flake-utils": "flake-utils_2",
+        "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
@@ -121,7 +85,6 @@
     },
     "root": {
       "inputs": {
-        "music-triage": "music-triage",
         "nixos": "nixos",
         "nixos-wsl": "nixos-wsl",
         "tsproxy": "tsproxy"
