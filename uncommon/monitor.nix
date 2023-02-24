@@ -21,9 +21,9 @@ in {
     enable = true;
     stateDir = promStateInVarLib;
     port = promPort;
-    # Limit memory usage to a cap:
+    # Limit memory usage - only keep 1d history locally
     extraFlags = [
-      "-storage.local.target-heap-size=${builtins.toString ( 128 * 1024 * 1024 )}"
+      "--storage.tsdb.retention.time=1d"
     ];
     scrapeConfigs = [
       {
