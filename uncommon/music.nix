@@ -71,6 +71,7 @@ in {
         ${pkgs.coreutils}/bin/date >>/tmp/navidrome-container-monitor.log
         ${pkgs.systemd}/bin/systemd-cgtop system.slice/navidrome.service \
           >>/tmp/navidrome-container-monitor.log
+        ${pkgs.coreutils}/bin/ls -lah /var/lib/private/navidrome
       '';
       serviceConfig = {
         Type = "oneshot";
