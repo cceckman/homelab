@@ -24,6 +24,8 @@ in {
     # Limit memory usage - only keep 1d history locally
     extraFlags = [
       "--storage.tsdb.retention.time=1d"
+      "--storage.tsdb.retention.size=2GB"
+      "--storage.tsdb.path=/media/qboot/prometheus/tsdb"
     ];
     scrapeConfigs = [
       {
