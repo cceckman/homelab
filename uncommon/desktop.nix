@@ -3,5 +3,6 @@
   environment.systemPackages = [
     pkgs.ffmpeg
     pkgs.flac
+    pkgs.hugo
   ];
 }

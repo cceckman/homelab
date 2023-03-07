@@ -79,6 +79,26 @@ in {
       };
     };
 
+    systemd.timers."all-container-monitor" = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+          OnCalendar = "hourly";
+          Unit = "all-container-monitor.service";
+        };
+    };
+
+
+    systemd.services."all-container-monitor" = {
+      script = ''
+        set -eu
+        ${pkgs.coreutils}/bin/date >>/tmp/containers.log
+        ${pkgs.systemd}/bin/systemd-cgtop -t >>/tmp/containers.log
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        User= "root";
+      };
+    };
   };
 
 }
