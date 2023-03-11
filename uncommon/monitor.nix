@@ -25,7 +25,8 @@ in {
     extraFlags = [
       "--storage.tsdb.retention.time=1d"
       "--storage.tsdb.retention.size=2GB"
-      "--storage.tsdb.path=/media/qboot/prometheus/tsdb"
+      # NixOS file defines this explicitly; can't override
+      # "--storage.tsdb.path=/media/qboot/prometheus/tsdb"
     ];
     scrapeConfigs = [
       {
