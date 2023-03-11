@@ -11,11 +11,9 @@
       url = "github:cceckman/tsproxy";
       inputs.nixpkgs.follows = "nixos";
     };
-    nix-ld.url = "github:Mic92/nix-ld";
-    nix-ld.inputs.nixpkgs.follows = "nixos";
   };
 
-  outputs = { self, nixos, nixos-wsl, tsproxy, nix-ld, ... } @ args: {
+  outputs = { self, nixos, nixos-wsl, tsproxy, ... } @ args: {
     nixosConfigurations =
       let rackPi = name: import ./common/rack.nix (args // { inherit name; });
     in {
@@ -26,7 +24,6 @@
       cromwell-nix = nixos.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          nix-ld.nixosModules.nix-ld
           nixos-wsl.nixosModules.wsl
           ./roses/cromwell-nix.nix
         ];
