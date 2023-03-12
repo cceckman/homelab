@@ -57,6 +57,7 @@ in {
       }
       {
         job_name = "navidrome";
+        scheme = "https";
         static_configs = [{ targets = [ "navidrome.monkey-heptatonic.ts.net" ]; }];
       }
     ];
