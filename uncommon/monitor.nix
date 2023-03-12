@@ -25,7 +25,7 @@ in {
     extraFlags = [
       "--storage.tsdb.retention.time=1d"
       "--storage.tsdb.retention.size=2GB"
-      # NixOS file defines this explicitly; can't override
+      # NixOS file defines this flag explicitly; can't override:
       # "--storage.tsdb.path=/media/qboot/prometheus/tsdb"
     ];
     scrapeConfigs = [
@@ -74,5 +74,11 @@ in {
         capacity = max_samples_per_send * 8;
       };
     }];
+  };
+  # To write Prometheus data to not-the-root-partition, we can't tweak the flag;
+  # have to bind-mount:
+  fileSystems."/var/lib/prometheus" = {
+    device = "/mnt/qboot/prometheus/data";
+    options = ["bind"];
   };
 }
