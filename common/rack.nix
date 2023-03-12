@@ -16,6 +16,10 @@
          device = "/dev/disk/by-label/QBOOTUSB";
        };
        environment.systemPackages = [ pkgs.vim ];
+       services.journald.extraConfig = ''
+         SystemMaxUse=100M
+         SystemMaxFileSize=10M
+       '';
      })
      ./nas.nix
      ../uncommon/music.nix
