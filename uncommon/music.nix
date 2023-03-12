@@ -39,6 +39,7 @@ in {
       TranscodingCacheSize = "0";
       ImageCacheSize = "0";
       Prometheus.Enabled = true;
+      ScanSchedule = "0";
     };
 
     # We want to try-to start these units only if the path actually exists.
