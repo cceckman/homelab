@@ -69,10 +69,17 @@ in {
     systemd.services."navidrome-container-monitor" = {
       script = ''
         set -eu
-        ${pkgs.coreutils}/bin/date >>/tmp/navidrome-container-monitor.log
-        ${pkgs.systemd}/bin/systemd-cgtop system.slice/navidrome.service \
-          >>/tmp/navidrome-container-monitor.log
-        ${pkgs.coreutils}/bin/ls -lah /var/lib/private/navidrome
+        PATH="$PATH:${pkgs.coreutils}/bin"
+        echo "date $(date +%s)" \
+          | cat - /sys/fs/cgroup/system.slice/navidrome.service/memory.stat \
+          >/tmp/navidrome-snap.log
+        if ! test -f /tmp/navidrome-container-memstat.csv
+        then
+          cat /tmp/navidrome-snap.log | cut -d' ' -f1 | paste -s -d, \
+            >/tmp/navidrome-container-memstat.csv
+        fi
+        cat /tmp/navidrome-snap.log | cut -d' ' -f2 | paste -s -d, \
+          >>/tmp/navidrome-container-memstat.csv
       '';
       serviceConfig = {
         Type = "oneshot";
@@ -89,17 +96,17 @@ in {
     };
 
 
-    systemd.services."all-container-monitor" = {
-      script = ''
-        set -eu
-        ${pkgs.coreutils}/bin/date >>/tmp/containers.log
-        ${pkgs.systemd}/bin/systemd-cgtop -t >>/tmp/containers.log
-      '';
-      serviceConfig = {
-        Type = "oneshot";
-        User= "root";
-      };
-    };
+   #systemd.services."all-container-monitor" = {
+   #  script = ''
+   #    set -eu
+   #    ${pkgs.coreutils}/bin/date >>/tmp/containers.log
+   #    ${pkgs.systemd}/bin/systemd-cgtop -t >>/tmp/containers.log
+   #  '';
+   #  serviceConfig = {
+   #    Type = "oneshot";
+   #    User= "root";
+   #  };
+   #};
   };
 
 }
