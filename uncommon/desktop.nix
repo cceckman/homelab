@@ -4,5 +4,6 @@
     pkgs.ffmpeg
     pkgs.flac
     pkgs.hugo
+    pkgs.gcc
   ];
 }
