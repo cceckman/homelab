@@ -30,10 +30,9 @@ in {
         device = "bigdata";
         fsType = "zfs";
         options = [
-          "x-systemd.device-timeout=1m"
-          "x-systemd.mount-timeout=5m"
+          "x-systemd.device-timeout=10s"
+          "x-systemd.mount-timeout=10s"
           "nofail"
-          "x-systemd.automount"
         ];
       };
       # ZFS wants to use a lot of memory; limit it a bit.
@@ -76,7 +75,10 @@ in {
       services.nfs.server.enable = true;
       fileSystems."/export/bigdata" = {
         device = "/mnt/bigdata";
-        options = [ "bind" ];
+        options = [
+          "bind"
+          "nofail"
+        ];
       };
       # Even with this, may need to set some registry settings to avoid Windows
       # reporting as "read-only":
