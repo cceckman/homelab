@@ -19,11 +19,25 @@ chmod +w "${TARGET}.img"
 guestfish -x --rw \
     --add "${TARGET}.img" \
     --mount /dev/sda2:/ \
-    --mount /dev/sda1:/boot \
     <<EOS
-write-append /boot/config.txt "\nenable_uart=1\n"
-write-append /boot/config.txt "\force_turbo=0\n"
-write-append /boot/config.txt "\ncore_freq=250\n"
+mkdir-p /boot/firmware
+copy-out /boot/extlinux/extlinux.conf .
+EOS
+sed -i \
+  -e '/APPEND/s/console=[^ ]* //g' \
+  -e 's/APPEND.*$/\0 console=ttyS1,115200n8/g' \
+  extlinux.conf
+
+guestfish -x --rw \
+    --add "${TARGET}.img" \
+    --mount /dev/sda2:/ \
+    --mount /dev/sda1:/boot/firmware \
+    <<EOS
+write-append /boot/firmware/config.txt "\nenable_uart=1\n"
+write-append /boot/firmware/config.txt "\force_turbo=0\n"
+write-append /boot/firmware/config.txt "\ncore_freq=250\n"
+copy-in extlinux.conf /boot/extlinux/
 EOS
 
-#
+rm extlinux.conf
+
