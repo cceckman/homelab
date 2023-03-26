@@ -14,6 +14,11 @@
        services.tailscale-autoconnect.enable = true;
        fileSystems."/media/qboot" = {
          device = "/dev/disk/by-label/QBOOTUSB";
+         options = [
+           "x-systemd.mount-timeout=3s"
+           "x-systemd.device-timeout=3s"
+           "nofail"
+         ];
        };
        environment.systemPackages = [ pkgs.vim ];
        services.journald.extraConfig = ''
