@@ -34,7 +34,6 @@ guestfish -x --rw \
     --mount /dev/sda1:/boot/firmware \
     <<EOS
 write-append /boot/firmware/config.txt "\nenable_uart=1\n"
-write-append /boot/firmware/config.txt "\force_turbo=0\n"
 write-append /boot/firmware/config.txt "\ncore_freq=250\n"
 copy-in extlinux.conf /boot/extlinux/
 EOS
