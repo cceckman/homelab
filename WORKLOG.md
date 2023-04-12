@@ -99,3 +99,36 @@ In all of the above:
 Having moved over to NixOS-in-WSL - seems to have done the trick. Still
 crossbuilding but I guess that's just want flakes do.
 
+## zpool
+
+```
+rack4% zpool status
+  pool: bigdata
+ state: DEGRADED
+status: One or more devices could not be used because the label is missing or
+        invalid.  Sufficient replicas exist for the pool to continue
+        functioning in a degraded state.
+action: Replace the device using 'zpool replace'.
+   see: https://openzfs.github.io/openzfs-docs/msg/ZFS-8000-4J
+  scan: resilvered 2.20M in 00:00:01 with 0 errors on Sat Feb 11 16:28:01 2023
+config:
+
+        NAME                        STATE     READ WRITE CKSUM
+        bigdata                     DEGRADED     0     0     0
+          raidz1-0                  DEGRADED     0     0     0
+            6798341520823796709     UNAVAIL      0     0     0  was /dev/disk/by-id/wwn-0x50014ee21522fca7-part1
+            wwn-0x50014ee26a782728  ONLINE       0     0     0
+            wwn-0x50014ee21522fe55  ONLINE       0     0     0
+```
+
+Hrm... `/dev/disk/by-id` shows:
+
+```
+ata-WDC_WD40EFZX-68AWUN0_WD-WX62D229KY5H        ata-WDC_WD40EFZX-68AWUN0_WD-WX72D122955L-part9   usb-SanDisk_Cruzer_Fit_4C530001050701110191-0:0-part1  wwn-0x50014ee21522fe55-part1
+ata-WDC_WD40EFZX-68AWUN0_WD-WX62D229KY5H-part1  mmc-SS16G_0xfbd54bfd                             usb-WDC_WD40_EFZX-68AWUN0_000000123AE8-0:0             wwn-0x50014ee21522fe55-part9
+ata-WDC_WD40EFZX-68AWUN0_WD-WX62D229KY5H-part9  mmc-SS16G_0xfbd54bfd-part1                       usb-WDC_WD40_EFZX-68AWUN0_000000123AE8-0:0-part1       wwn-0x50014ee26a782728
+ata-WDC_WD40EFZX-68AWUN0_WD-WX72D122955L        mmc-SS16G_0xfbd54bfd-part2                       usb-WDC_WD40_EFZX-68AWUN0_000000123AE8-0:0-part9       wwn-0x50014ee26a782728-part1
+ata-WDC_WD40EFZX-68AWUN0_WD-WX72D122955L-part1  usb-SanDisk_Cruzer_Fit_4C530001050701110191-0:0  wwn-0x50014ee21522fe55                                 wwn-0x50014ee26a782728-part9
+```
+
+Which is weird- two of the disks showing up as "from ATA", one as "from USB". What's up with that?
