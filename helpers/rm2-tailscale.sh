@@ -1,13 +1,18 @@
 #!/bin/sh
 #
-# Script to set up a reMarkable 2 device.
-# Setup includes:
-# - Nothing yet!
+# This script enables [Tailscale] on a [reMarkable 2] tablet.
 #
-# TODO:
-# - [ ] Tailscale
-# - [ ] Backups
-
+# Tailscale is run in [userspace networking] mode, so any outbound applications
+# will need to be configured to proxy via tailscaled.
+#
+# The script assumes you've set up SSH to the tablet, as described in
+# https://remarkablewiki.com/tech/ssh, and that it's locally connected
+# (not just via Tailscale) during setup.
+#
+# [Tailscale]: https://tailscale.com
+# [reMarkable 2]: https://remarkable.com/
+# [userspace networking]: https://tailscale.com/kb/1112/userspace-networking/
+#
 set -eu
 
 if ! test "$#" = "1"
@@ -78,10 +83,11 @@ set +x
 # the tailscale.service definition includes PORT and FLAGS variables.
 # We oblige!
 # The reMarkable kernel doesn't appear to have CONFIG_TUN (no /dev/net/tun),
-# so we have to try userspace-networking.
+# so we have to try userspace-networking:
+# https://tailscale.com/kb/1112/userspace-networking/
 cat <<EOS >/etc/default/tailscaled
 PORT=41641
-FLAGS="--tun userspace-networking"
+FLAGS="--tun userspace-networking --socks5-server=localhost:1055 --outbound-http-proxy-listen=localhost:1055"
 EOS
 
 
@@ -89,13 +95,15 @@ echo >&2 "Reloading systemd..."
 systemctl daemon-reload
 
 echo >&2 "Starting tailscale..."
-systemctl enable --now tailscaled
+systemctl enable tailscaled
+systemctl restart tailscaled
 tailscale up
 EOF
 chmod +x "$CONTENT/setup.sh"
 
 echo >&2 "Connecting and uploading..."
-ssh "$TARGET" "echo 'Connected to reMarkable!'; rm -rf $TSINSTALLPATH; mkdir -p $TSINSTALLPATH" >&2
+ssh -o ConnectTimeout=5 "$TARGET" \
+  "echo >&2 'Connected to reMarkable!'; rm -rf $TSINSTALLPATH; mkdir -p $TSINSTALLPATH" >&2
 rsync -avz "$CONTENT" "$TARGET:$TSINSTALLPATH"
 
 echo >&2 "Running setup..."
