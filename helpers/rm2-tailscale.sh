@@ -38,7 +38,7 @@ build_tailscale() {
     mkdir -p "$(dirname "$TSPATH")"
     git clone https://github.com/tailscale/tailscale.git "$TSPATH"
   fi
-  (cd "$TSPATH"; git checkout "$TSVERSION")
+  (cd "$TSPATH"; git fetch --tags; git checkout "$TSVERSION")
 
   # We're building for a small device. We aren't trying to squeeze onto the root
   # partition, but we still want to leave more space for docs if we can.

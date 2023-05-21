@@ -59,7 +59,7 @@ build_restic() {
     mkdir -p "$(dirname "$RESTICPATH")"
     git clone 1 https://github.com/restic/restic.git "$RESTICPATH"
   fi
-  (cd "$RESTICPATH" ; git checkout "$RESTICVERSION")
+  (cd "$RESTICPATH" ; git fetch --tags; git checkout "$RESTICVERSION")
 
   # Use some of the ldflags from tailscale to keep the size down.
   echo >&2 "Building restic..."
