@@ -3,6 +3,7 @@
   cfg = config.services.cceckman-nas;
   guest-uid = 995;
   guest-gid = 995;
+  restic-server-port = 2222;
 in {
   options.services.cceckman-nas = {
     mountpoint = lib.mkOption {
@@ -103,35 +104,47 @@ in {
       users.groups.restic = {
         gid = config.ids.gids.restic;
       };
-      services.restic = {
-        backups.remote = {
+      services.restic =
+        let backup-options = {
           # This targets a GCS bucket
           repository = "gs:xueckman-backup:restic/";
-          # Which means we need an environment file setting the credentials
+          # Which means we need an environment file setting the credential
+          # location
           environmentFile = "/etc/nixos/secrets/restic/environment";
-          # And we'll also need a credentials file there
+          # And we'll also need a credentials file on the device
 
           # Contains encryption password
           passwordFile = "/etc/nixos/secrets/restic/password";
-          paths = [
-            "${cfg.mountpoint}/perpetual"
-          ];
-          initialize = true;
-          user = "restic";
-          extraBackupArgs = [
-            "--limit-upload=40960" # 2 MiB/s
-            # Allow restic to use a cache; put it on the same bigdata volume
-            # though obviously not in the backed-up path!
-            "--cache-dir ${cfg.mountpoint}/.cache/restic"
-            "--cleanup-cache"
-          ];
 
-          timerConfig = {
-            OnCalendar = "04:05";
-            RandomizedDelaySec = "2h";
+        };
+        in {
+          backups.remote = backup-options // {
+            paths = [
+              "${cfg.mountpoint}/perpetual"
+            ];
+            initialize = true;
+            user = "restic";
+            extraBackupArgs = [
+              "--limit-upload=40960" # 2 MiB/s
+              # Allow restic to use a cache; put it on the same bigdata volume
+              # though obviously not in the backed-up path!
+              "--cache-dir ${cfg.mountpoint}/.cache/restic"
+              "--cleanup-cache"
+            ];
+
+            timerConfig = {
+              OnCalendar = "04:05";
+              RandomizedDelaySec = "2h";
+            };
+          };
+          server = {
+            enable = true;
+            privateRepos = true;
+            appendOnly = true;
+            listenAddress = ":" + toString(restic-server-port);
+            dataDir = "${cfg.mountpoint}/serving/restic-server/";
           };
         };
-      };
     })
     # Client fragment:
     (lib.mkIf (config.networking.hostName != cfg.host) {
