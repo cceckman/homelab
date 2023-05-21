@@ -1,170 +1,168 @@
 #!/bin/sh
 #
-# Install push-based backups on a reMarkable 2.
-
-# TODO: The sketch below isn't a great solution.
-# Giving the reMarkable SSH access to the NAS is...not great. I have relatively
-# little trust in things like restricted shells or even SSH_ORIGINAL_COMMAND
-# limitations.
+# This script enables [restic] backups on a [reMarkable 2] tablet.
 #
-# What I'd like is a server that receives these backups, but that _only_ knows
-# how to process backups - not run arbitrary commands.
-# The Restic rest-server seems like a good candidate:
-#   https://github.com/restic/rest-server
-# General flow being:
-# - reMarkable periodically (frequently?) copies to the rest-server
-# - periodic (less frequently?) sync from the rest-server data - as a local
-#   repository- to the main (remote) restic repository (?)
+# [restic]: https://restic.net
+# [reMarkable 2]: https://remarkable.com/
 #
-# - later step: periodic extraction / realization of reMarkable files into
-#   Documents tree. (Some duplication of content; but at least PDFs should
-#   benefit from dedupe? I think?)
-
+set -eu
 
 usage() {
-  exec >&2
-  echo "usage:"
-  echo "  $0 <TARGET> <USER>@<HOST>:<DIR>"
-  echo "Configure <TARGET> to back up to <HOST>:<DIR>, "
-  echo "via a connection as <USER>."
+  cat <<EOS >&2
+usage:
+  $0 <REMARKABLE> [<BACKUP_SERVER> <PASSWORD> <USER>]
+
+Sets up <REMARKABLE> to perform regularly-scheduled backups.
+
+If provided, BACKUP_SERVER, PASSWORD, and USER are used to construct the backup
+URL. Backups will be sent to
+
+  rest:http://<USER>:<PASSWORD>@<BACKUP_SERVER>
+
+<PASSWORD> is assumed to also be the Restic repository password.
+
+(If these values are not provided, this script assumes an existing
+configuration.)
+
+The script will automatically configure Restic to use HTTP and SOCKS proxies if
+Tailscale is enabled (per rm2-tailscale).
+EOS
 }
 
-if ! test "$#" -eq "2"
+# Consume arguments:
+REMARKABLE="$1"
+
+HAS_CONFIG=false
+if test "$#" -eq 4
+then
+  HAS_CONFIG=true
+  BACKUP_SERVER="$2"
+  PASSWORD="$3"
+  RESTIC_USER="${4}"
+elif test "$#" -ne 1
 then
   usage
   exit 1
 fi
-
-set -eu
-
-TARGET="$1"
-BACKUP_USER="$(echo "$2" | cut -d'@' -f1)"
-BACKUP_HOST="$(echo "$2" | cut -d'@' -f2 | cut -d':' -f1)"
-BACKUP_DIR="$(echo "$2" | cut -d':' -f2)"
+INSTALLPATH="~/restic"
 
 CONTENT="$(mktemp -d)/"
-
-cat <<EOF >"$CONTENT"/rm2-push-backup.sh
-#!/bin/sh
-# Push a backup for this reMarkable.
-
-set -eu
-
-# Clean up old, possibly incomplete backups:
-ssh "$BACKUP_USER"@"$BACKUP_HOST" -- \
-  'find "$BACKUP_DIR" -type d -mindepth 1 -not -name latest -delete'
-# Make a copy of the latest backup, to update:
-NOW="\$(date -Iminutes)"
-ssh "$BACKUP_USER"@"$BACKUP_HOST" -- \
-  if test -d "$BACKUP_DIR"/latest; \
-    then cp -r "$BACKUP_DIR"/latest "$BACKUP_DIR"/"\$NOW" ; \
+build_restic() {
+  # Build Restic for reMarkable
+  # https://github.com/fako1024/go-remarkable
+  # This is where I usually download things - not necessarily GOMODCACHE.
+  RESTICPATH="$HOME"/r/github.com/restic/restic
+  RESTICVERSION="v0.15.2"
+  if ! test -d "$RESTICPATH"
+  then
+    echo >&2 "Downloading restic source..."
+    mkdir -p "$(dirname "$RESTICPATH")"
+    git clone 1 https://github.com/restic/restic.git "$RESTICPATH"
   fi
+  (cd "$RESTICPATH" ; git checkout "$RESTICVERSION")
 
-# Update the current snapshot:
-rsync --dry-run \
-  -avzOP \
-  --delete \
-  --chown "$BACKUP_USER":"$BACKUP_USER" \
-  ~/.local/share/remarkable/xochitl/ \
-  "$BACKUP_USER"@"$BACKUP_HOST":"$BACKUP_DIR"/"\$NOW"/
+  # Use some of the ldflags from tailscale to keep the size down.
+  echo >&2 "Building restic..."
+  GOOS=linux GOARCH=arm GOARM=7 \
+    go build \
+    -o "$CONTENT"/restic \
+    -C "$RESTICPATH" \
+    -ldflags "-w -s" \
+    ./cmd/restic
+  echo >&2 "Restic binary up-to-date in $CONTENT"
+}
 
-# And atomically replace the previous:
-ssh "$BACKUP_USER"@"$BACKUP_HOST" -- \
-  mv "$BACKUP_DIR"/"\$NOW" "$BACKUP_DIR"/latest
+build_restic
 
-EOF
-chmod +x "$CONTENT"/rm2-push-backup.sh
-
-cat <<EOF >"$CONTENT"/rm2-push-backup.service
+# Restic has several configuration files we'll need:
+# - Systemd unit - to run the backup
+# - Timer file - to trigger execution
+# - Environment file - to configure repository, password, and proxy
+cat <<EOF >"$CONTENT"/restic.service
 [Unit]
-Description=Push backups for reMarkable 2
-Documentation=https://cceckman.com
-Wants=network.target
-After=network.target systemd-resolved.service
+Description=Restic backups
+Requires=network.target
+After=network.target network-online.target
 
 [Service]
-ExecStart=/usr/bin/rm2-push-backup
+EnvironmentFile=/etc/default/restic.env
+
+Type=oneshot
+PrivateTmp=true
+RuntimeDirectory=restic
+CacheDirectory=restic
+CacheDirectoryMode=0700
+X-RestartIfChanged=false
+User=root
+
+ExecStart=/bin/sh -c '/usr/bin/restic backup \
+  --cache-dir \$CACHE_DIRECTORY --cleanup-cache \
+  /home/root/.config/remarkable/xochitl.conf \
+  /home/root/.local/share/remarkable/xochitl/ \
+  /usr/bin/xochitl'
 EOF
 
-cat <<EOF >"$CONTENT"/rm2-push-backup.timer
+cat <<EOF >"$CONTENT"/restic.timer
 [Unit]
-Description=Schedule for push backups for reMarkable 2
-Documentation=https://cceckman.com
+Description=Trigger for Restic backups
 
 [Install]
 WantedBy=timers.target
 
 [Timer]
-OnBoot=15min
 OnCalendar=daily
-RandomizedDelaySec=60
 Persistent=true
+RandomizedDelaySecs=30
 EOF
 
-
-cat <<EOF >"$CONTENT"/sshconfig
-Host "$BACKUP_HOST"
-  PasswordAuthentication no
-  IdentitiesOnly yes
-  IdentityFile %d/.ssh/id_rm2-push-backup
-  User "$BACKUP_USER"
-  RequestTTY no
+if "$HAS_CONFIG"
+then
+cat <<EOF >"$CONTENT"/restic.env
+RESTIC_REPOSITORY=rest:http://${RESTIC_USER}:$PASSWORD@$BACKUP_SERVER
+RESTIC_PASSWORD=$PASSWORD
 EOF
-
-# reMarkable doesn't have ssh-keygen, so we have to do it for them.
-ssh-keygen -t ed25519 -N "" -C "$TARGET backups" -f "$CONTENT"/id
+fi
 
 cat <<EOF >"$CONTENT"/setup.sh
-#!/bin/sh
-#
-# Script to set up $TARGET for rm2-push-backup.
-#
-# Set up keys with which to access the target.
 
 set -eu
-cd \$(dirname \$0)
 
-mkdir -p ~/.ssh
-if ! test -f ~/.ssh/id_rm2-push-backup
-then
-  mv id ~/.ssh/id_rm2-push-backup
-  mv id.pub ~/.ssh/id_rm2-push-backup.pub
-else
-  rm id*
-fi
-chmod -R 0700 ~/.ssh
+# Install files to their proper locations:
+ls -lah $INSTALLPATH
+chown -R root:root $INSTALLPATH
 
-if ! test -f ~/.ssh/config.rm2-push-backup
+echo >&2 "Updating environment file..."
+# If we find Tailscale on the device (per rm2-tailscale), update the environment
+# so restic proxies via Tailscale:
+# https://tailscale.com/kb/1112/userspace-networking/
+if test -f /etc/default/tailscaled && ! grep -q 'PROXY' $INSTALLPATH/restic.env
 then
-  cp sshconfig ~/.ssh/config.rm2-push-backup
-fi
-if ! test -f ~/.ssh/config || ! grep -q 'rm2-push-backup' ~/.ssh/config
-then
-cat <<EOS >>~/.ssh/config
-
-Include .ssh/config.rm2-push-backup
+cat <<EOS >>$INSTALLPATH/restic.env
+ALL_PROXY=socks5://localhost:1055/
+HTTP_PROXY=http://localhost:1055/
+http_proxy=http://localhost:1055/
 EOS
 fi
 
-# Install:
-ln -sf \$(pwd)/rm2-push-backup.sh /usr/bin/rm2-push-backup
-ln -sf \$(pwd)/rm2-push-backup.service /etc/systemd/system/rm2-push-backup.service
-ln -sf \$(pwd)/rm2-push-backup.timer /etc/systemd/system/rm2-push-backup.timer
+echo >&2 "Installing binaries and service definitions..."
+# Link from the /usr paths to our install location
+ln -sf $INSTALLPATH/restic /usr/bin/restic
+ln -sf $INSTALLPATH/restic.env /etc/default/restic.env
+ln -sf $INSTALLPATH/restic.service /etc/systemd/system/restic.service
+ln -sf $INSTALLPATH/restic.timer /etc/systemd/system/restic.timer
 
+echo >&2 "Reloading units and starting timers..."
 systemctl daemon-reload
-systemctl enable --now rm2-push-backup.timer
+systemctl enable --now restic.timer
+
 EOF
-chmod +x "$CONTENT"/setup.sh
+chmod +x "$CONTENT/setup.sh"
 
-# Delete key material after we copy up:
-rsync -azP --remove-source-files --chown root:root \
-  "$CONTENT"/ \
-  "$TARGET":'~/rm2-push-backup/'
-ssh "$TARGET" './rm2-push-backup/setup.sh'
+echo >&2 "Connecting and uploading..."
+ssh -o ConnectTimeout=5 "$REMARKABLE" \
+  "echo >&2 'Connected to reMarkable!'; mkdir -p $INSTALLPATH" >&2
+rsync -avz --remove-source-files "$CONTENT" "$REMARKABLE:$INSTALLPATH"
 
-echo >&2
-echo >&2 "Backups will be performed by $BACKUP_USER on $BACKUP_HOST"
-echo >&2 "using key: "
-ssh -q "$TARGET" 'cat .ssh/id_rm2-push-backup.pub' >&2
-
+echo >&2 "Running setup..."
+ssh "$REMARKABLE" "$INSTALLPATH/setup.sh"
 

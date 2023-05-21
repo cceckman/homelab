@@ -28,15 +28,17 @@ TSINSTALLPATH="~/tailscale"
 CONTENT="$(mktemp -d)/"
 build_tailscale() {
   # Build Tailscale:
-  # https://github.com/fako1024/go-remarkabl://github.com/fako1024/go-remarkable
+  # https://github.com/fako1024/go-remarkable
   # This is where I usually download things - not necessarily GOMODCACHE.
   TSPATH="$HOME"/r/github.com/tailscale/tailscale
+  TSVERSION="v1.40.1"
   if ! test -d "$TSPATH"
   then
     echo >&2 "Downloading tailscale source..."
     mkdir -p "$(dirname "$TSPATH")"
-    git clone --depth 1 https://github.com/tailscale/tailscale.git "$TSPATH"
+    git clone https://github.com/tailscale/tailscale.git "$TSPATH"
   fi
+  (cd "$TSPATH"; git checkout "$TSVERSION")
 
   # We're building for a small device. We aren't trying to squeeze onto the root
   # partition, but we still want to leave more space for docs if we can.
@@ -44,21 +46,21 @@ build_tailscale() {
   # Use https://tailscale.com/kb/1207/small-tailscale,
   # and tags+flags pulled from build_dist.
   echo >&2 "Building tailscale..."
-  GOOS=linux GOARCH=arm GOARM=7 \
-    go build \
+  (
+    cd $TSPATH
+    GOOS=linux GOARCH=arm GOARM=7 \
+    ./build_dist.sh --extra-small --box \
     -o "$CONTENT"/tailscale.combined \
     -C "$TSPATH" \
-    -tags ts_include_cli,ts_omit_aws,ts_omit_tap,ts_omit_kube \
-    -ldflags "-w -s" \
     ./cmd/tailscaled
+  )
   echo >&2 "Tailscale binary up-to-date in $CONTENT"
 
   # Capture the service file too.
   cp "$TSPATH"/cmd/tailscaled/tailscaled.service "$CONTENT"
 }
 
-# Build in a subshell, so cd doesn't move us.
-( build_tailscale )
+build_tailscale
 
 cat <<EOF >"$CONTENT"/setup.sh
 
