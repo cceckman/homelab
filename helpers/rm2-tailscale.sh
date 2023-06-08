@@ -31,7 +31,7 @@ build_tailscale() {
   # https://github.com/fako1024/go-remarkable
   # This is where I usually download things - not necessarily GOMODCACHE.
   TSPATH="$HOME"/r/github.com/tailscale/tailscale
-  TSVERSION="v1.40.1"
+  TSVERSION="v1.42.0"
   if ! test -d "$TSPATH"
   then
     echo >&2 "Downloading tailscale source..."
