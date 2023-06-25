@@ -1,0 +1,18 @@
+- name: "Bootstrap a Debian host"
+  hosts: "localhost"
+  tasks:
+  - name: "install default packages"
+    ansible.builtin.apt:
+      pkg:
+        - bash
+        - git
+        - htop
+        - mtr
+        - psmisc
+        - python3
+        - ripgrep
+        - ssh
+        - traceroute
+        - vim
+        - zsh
+
