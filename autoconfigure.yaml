@@ -1,0 +1,7 @@
+---
+- name: "Autoconfigure the current host"
+  hosts: ["localhost"]
+  tasks:
+  - include_role:
+      role: "~/r/github.com/cceckman/homelab/roles/autoconfigure"
+
