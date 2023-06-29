@@ -1,18 +1,25 @@
-- name: "Bootstrap a Debian host"
+- name: "Bootstrap the homelab repository"
   hosts: "localhost"
   tasks:
   - name: "install default packages"
+    become: yes
     ansible.builtin.apt:
+      update_cache: yes
       pkg:
-        - bash
         - git
-        - htop
-        - mtr
-        - psmisc
-        - python3
-        - ripgrep
-        - ssh
-        - traceroute
-        - vim
-        - zsh
+  - name: "download homelab"
+    ansible.builtin.git:
+      repo: "https://github.com/cceckman/homelab.git"
+      version: ansible
+
+      dest: "~/r/github.com/cceckman/homelab"
+
+      depth: 1
+      single_branch: true
+      update: true
+      force: true
+      clone: true
+  - include_role:
+      name: "autoconfigure"
+      role: "~/r/github.com/cceckman/homelab/roles/autoconfigure"
 
