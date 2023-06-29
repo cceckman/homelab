@@ -1,5 +1,27 @@
-- name: "Print all available facts"
-  ansible.builtin.debug:
-    var: ansible_facts
-
+- name: "Install default packages"
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - bash
+      - dnsutils
+      - git
+      - htop
+      - locales
+      - mtr
+      - net-tools
+      - psmisc
+      - python3
+      - ripgrep
+      - rsync
+      - ssh
+      - tcpdump
+      - traceroute
+      - vim
+      - whois
+      - zip 
+      - unzip
+- name: "Customize shell"
+  include_tasks: shell-config.yaml
+  when: "(ansible_facts['user_id'] == 'cceckman') or (force_shell_setup is defined)"
 

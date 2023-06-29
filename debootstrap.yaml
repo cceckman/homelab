@@ -2,7 +2,7 @@
 - name: "Bootstrap the homelab repository"
   hosts: "localhost"
   tasks:
-  - name: "install default packages"
+  - name: "install git and refresh cache"
     become: yes
     ansible.builtin.apt:
       update_cache: yes

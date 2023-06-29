@@ -1,0 +1,17 @@
+- name: "Install zsh"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - zsh
+- name: "Change user shell to zsh"
+  become: yes
+  ansible.builtin.user:
+    name: "{{ ansible_facts['user_id'] }}"
+    shell: /bin/zsh
+- name: "Capture home directory"
+  ansible.builtin.shell: "getent passwd | grep '^{{ ansible_facts['user_id'] }}' | cut -d: -f6"
+  register: homedir
+- name: "Set up home directory"
+  ansible.builtin.shell: "touch {{ homedir }}/ansible-run"
+
+
