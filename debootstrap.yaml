@@ -1,3 +1,4 @@
+---
 - name: "Bootstrap the homelab repository"
   hosts: "localhost"
   tasks:
@@ -20,6 +21,5 @@
       force: true
       clone: true
   - include_role:
-      name: "autoconfigure"
       role: "~/r/github.com/cceckman/homelab/roles/autoconfigure"
 
