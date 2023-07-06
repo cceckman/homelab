@@ -1,3 +1,3 @@
 [submodule "roles/autoconfigure/files/Tilde"]
 	path = roles/autoconfigure/files/Tilde
-	url = git@github.com:cceckman/Tilde.git
+	url = https://github.com/cceckman/Tilde.git
