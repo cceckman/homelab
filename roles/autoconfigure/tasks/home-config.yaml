@@ -8,14 +8,6 @@
     clone: true
     update: false
     recursive: true
-- name: "Download homelab"
-  ansible.builtin.git:
-    repo: "https://github.com/cceckman/homelab.git"
-    dest: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/homelab"
-    version: "ansible"
-    clone: true
-    update: false
-    recursive: true
 - name: "Link .vim"
   ansible.builtin.file:
     src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.vim"
@@ -36,7 +28,7 @@
     mode: 0755
 - name: "Link .tmux.conf"
   ansible.builtin.file:
-    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/homelab/roles/autoconfigure/files/tmux.conf"
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/tmux.conf"
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.tmux.conf"
     state: link
     # Replace the existing file, if present.
@@ -44,7 +36,7 @@
     mode: 0644
 - name: "Link portablerc"
   ansible.builtin.file:
-    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/homelab/roles/autoconfigure/files/portablerc.sh"
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/rcfiles/portablerc.sh"
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
     state: link
     # Replace the existing file, if present.

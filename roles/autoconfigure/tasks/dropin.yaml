@@ -7,11 +7,11 @@
     path: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
   register: portablerc
 - name: "Deploy default portable rc"
-  when: "not portablerc.stat.islnk"
+  when: "not (portablerc.stat.exists and not portablerc.stat.islnk)"
   ansible.builtin.copy:
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
     mode: 0755
-    src: portablerc.sh
+    src: Tilde/rcfiles/portablerc.sh
 - name: "Use portable rc for bash"
   ansible.builtin.file:
     src: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
@@ -35,5 +35,5 @@
   ansible.builtin.copy:
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.tmux.conf"
     mode: 0644
-    src: tmux.conf
+    src: Tilde/tmux.conf
 
