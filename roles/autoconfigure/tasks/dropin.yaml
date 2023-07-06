@@ -31,7 +31,7 @@
     path: "{{ find_homedir.stdout_lines[0] | quote }}/.tmux.conf"
   register: tmuxconf
 - name: "Deploy default tmux config"
-  when: "ansible_facts['user_id'] == 'cceckman' and not tmuxconf.stat.islnk"
+  when: "not (tmuxconf.stat.exists and not tmuxconf.stat.islnk)"
   ansible.builtin.copy:
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.tmux.conf"
     mode: 0644

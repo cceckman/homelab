@@ -8,7 +8,7 @@
       update_cache: yes
       pkg:
         - git
-  - name: "Download homelab snapshot"
+  - name: "Create directory for homelab snapshot"
     ansible.builtin.tempfile:
       state: "directory"
       suffix: "homelab.git"
