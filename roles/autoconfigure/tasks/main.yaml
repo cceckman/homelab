@@ -1,8 +1,11 @@
+- name: Print all available facts
+  ansible.builtin.debug:
+    var: ansible_facts
 - name: "Install default shell, tmux configs"
-  include_tasks: dropin.yaml
   # By default, only configure my personal stuff if I'm cceckman on the remote
   # end.
   when: "(ansible_facts['user_id'] == 'cceckman') or (force_config_defaults is defined)"
+  include_tasks: dropin.yaml
 - name: "Install default packages"
   # TODO: Apply only if we have sudo permissions on the target.
   become: true

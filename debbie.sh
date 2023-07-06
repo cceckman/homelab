@@ -5,5 +5,11 @@ sudo apt install -y ansible curl
 curl --fail -Lo debootstrap.yaml \
   https://raw.githubusercontent.com/cceckman/homelab/ansible/debootstrap.yaml
 
-sudo ansible-playbook debootstrap.yaml
+echo >&2 "Starting sudo mode..."
+while ! sudo echo >&2 "Got sudo permission!"
+do
+  echo >&2 "Retry?"
+done
+# Run this as the current user; "become" only as needed
+ansible-playbook debootstrap.yaml
 
