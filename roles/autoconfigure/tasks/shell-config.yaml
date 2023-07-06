@@ -11,24 +11,4 @@
   ansible.builtin.user:
     name: "{{ ansible_facts['user_id'] }}"
     shell: /bin/zsh
-- name: "Capture home directory"
-  ansible.builtin.shell: "getent passwd | grep '^{{ ansible_facts['user_id'] | quote }}' | cut -d: -f6"
-  register: find_homedir
-- name: "Deploy default portable rc"
-  ansible.builtin.copy:
-    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
-    mode: 0755
-    src: portablerc.sh
-- name: "Use portable rc for bash"
-  ansible.builtin.file:
-    src: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
-    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.bashrc"
-    state: link
-    mode: 0755
-- name: "Use portable rc for zsh"
-  ansible.builtin.file:
-    src: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
-    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.zshrc"
-    state: link
-    mode: 0755
 

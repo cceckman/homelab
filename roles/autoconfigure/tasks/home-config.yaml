@@ -8,6 +8,14 @@
     clone: true
     update: false
     recursive: true
+- name: "Download homelab"
+  ansible.builtin.git:
+    repo: "https://github.com/cceckman/homelab.git"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/homelab"
+    version: "ansible"
+    clone: true
+    update: false
+    recursive: true
 - name: "Link .vim"
   ansible.builtin.file:
     src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.vim"
@@ -19,7 +27,7 @@
     src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.vimrc"
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.vimrc"
     state: link
-    mode: 0755
+    mode: 0644
 - name: "Link .config"
   ansible.builtin.file:
     src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.config"
@@ -28,23 +36,33 @@
     mode: 0755
 - name: "Link .tmux.conf"
   ansible.builtin.file:
-    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.tmux.conf"
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/homelab/roles/autoconfigure/files/tmux.conf"
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.tmux.conf"
     state: link
-    mode: 0755
+    # Replace the existing file, if present.
+    force: true
+    mode: 0644
+- name: "Link portablerc"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/homelab/roles/autoconfigure/files/portablerc.sh"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.portablerc.sh"
+    state: link
+    # Replace the existing file, if present.
+    force: true
+    mode: 0644
 - name: "Link .gitignore_global"
   ansible.builtin.file:
     src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.gitignore_global"
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.gitignore_global"
     state: link
-    mode: 0755
+    mode: 0644
 - name: "Link .gitconfig"
   # TODO: Remove this; change to a combination of includes and templating
   ansible.builtin.file:
     src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.gitconfig"
     dest: "{{ find_homedir.stdout_lines[0] | quote }}/.gitconfig"
     state: link
-    mode: 0755
+    mode: 0644
 - name: "Link scripts"
   # TODO: Remove this; make include paths relative to realpath
   ansible.builtin.file:

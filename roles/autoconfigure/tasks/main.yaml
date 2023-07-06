@@ -1,4 +1,10 @@
+- name: "Install default shell, tmux configs"
+  include_tasks: dropin.yaml
+  # By default, only configure my personal stuff if I'm cceckman on the remote
+  # end.
+  when: "(ansible_facts['user_id'] == 'cceckman') or (force_config_defaults is defined)"
 - name: "Install default packages"
+  # TODO: Apply only if we have sudo permissions on the target.
   become: true
   ansible.builtin.apt:
     update_cache: true
@@ -33,9 +39,5 @@
   register: tilde_checkout
 - name: "Link home directory to tilde"
   include_tasks: home-config.yaml
-  when: "(full_home is defined) or (tilde_checkout.stat.exists)"
-# - name: "Minimal home directory config"
-#   include_tasks: min-home.yaml
-#   when: "not ((full_home is defined) or (tilde_checkout.stat.exists))"
-
+  when: "(ansible_facts['user_id'] == 'cceckman') and ((full_home is defined) or (tilde_checkout.stat.exists))"
 
