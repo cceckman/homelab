@@ -19,9 +19,23 @@
       - traceroute
       - vim
       - whois
-      - zip 
+      - zip
       - unzip
 - name: "Customize shell"
   include_tasks: shell-config.yaml
   when: "(ansible_facts['user_id'] == 'cceckman') or (force_shell_setup is defined)"
+- name: "Capture home directory"
+  ansible.builtin.shell: "getent passwd | grep '^{{ ansible_facts['user_id'] | quote }}' | cut -d: -f6"
+  register: find_homedir
+- name: "Find existing Tilde checkout"
+  ansible.builtin.stat:
+    path: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde"
+  register: tilde_checkout
+- name: "Link home directory to tilde"
+  include_tasks: home-config.yaml
+  when: "(full_home is defined) or (tilde_checkout.stat.exists)"
+# - name: "Minimal home directory config"
+#   include_tasks: min-home.yaml
+#   when: "not ((full_home is defined) or (tilde_checkout.stat.exists))"
+
 

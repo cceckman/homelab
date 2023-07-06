@@ -1,0 +1,71 @@
+- name: "Capture home directory"
+  ansible.builtin.shell: "getent passwd | grep '^{{ ansible_facts['user_id'] | quote }}' | cut -d: -f6"
+  register: find_homedir
+- name: "Download Tilde"
+  ansible.builtin.git:
+    repo: "https://github.com/cceckman/Tilde.git"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde"
+    clone: true
+    update: false
+    recursive: true
+- name: "Link .zshrc"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.zshrc"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.zshrc"
+    state: link
+- name: "Link .vim"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.vim"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.vim"
+    state: link
+- name: "Link .vimrc"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.vimrc"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.vimrc"
+    state: link
+- name: "Link .config"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.config"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.config"
+    state: link
+- name: "Link .tmux.conf"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.tmux.conf"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.tmux.conf"
+    state: link
+- name: "Link .gitignore_global"
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.gitignore_global"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.gitignore_global"
+    state: link
+- name: "Link .gitconfig"
+  # TODO: Remove this; change to a combination of includes and templating
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.gitconfig"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.gitconfig"
+    state: link
+- name: "Link scripts"
+  # TODO: Remove this; make include paths relative to realpath
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/scripts"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/scripts"
+    state: link
+- name: "Link rcfiles"
+  # TODO: Remove this; make include paths relative to realpath
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/rcfiles"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/rcfiles"
+    state: link
+- name: "Link .zsh"
+  # TODO: Remove this; make include paths relative to realpath
+  ansible.builtin.file:
+    src: "{{ find_homedir.stdout_lines[0] | quote }}/r/github.com/cceckman/Tilde/.zsh"
+    dest: "{{ find_homedir.stdout_lines[0] | quote }}/.zsh"
+    state: link
+- name: "Install host-useful programs"
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    pkg:
+      - jq
+

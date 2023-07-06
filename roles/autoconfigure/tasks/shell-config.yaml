@@ -1,24 +1,14 @@
-- name: "Install zsh"
+- name: "Install user-friendly packages"
   become: true
   ansible.builtin.apt:
     pkg:
+      - cmatrix
+      - man
+      - tmux
       - zsh
 - name: "Change user shell to zsh"
   become: yes
   ansible.builtin.user:
     name: "{{ ansible_facts['user_id'] }}"
     shell: /bin/zsh
-- name: "Capture home directory"
-  ansible.builtin.shell: "getent passwd | grep '^{{ ansible_facts['user_id'] | quote }}' | cut -d: -f6"
-  register: find_homedir
-- name: "Download Tilde"
-  # TODO: Should I use separate-git-dir in some fashion?
-  ansible.builtin.git:
-    repo: "https://github.com/cceckman/Tilde.git"
-    dest: "{{ find_homedir.stdout_lines[0] | quote }}"
-    clone: true
-    update: false
-    recursive: true
-
-
 
