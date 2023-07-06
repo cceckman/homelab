@@ -56,6 +56,10 @@ e() {
   fi
 }
 
+ca() {
+  git commit -a -m "$@"
+}
+
 title() {
   # change the title of the current window or tab.
   # Default:
