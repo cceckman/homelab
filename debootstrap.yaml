@@ -2,24 +2,27 @@
 - name: "Bootstrap the homelab repository"
   hosts: "localhost"
   tasks:
-  - name: "install git and refresh cache"
+  - name: "install git and refresh apt cache"
     become: yes
     ansible.builtin.apt:
       update_cache: yes
       pkg:
         - git
-  - name: "download homelab"
+  - name: "Download homelab snapshot"
+    ansible.builtin.tempfile:
+      state: "directory"
+      suffix: "homelab.git"
+    register: "homelab"
+  - name: "Download homelab"
     ansible.builtin.git:
       repo: "https://github.com/cceckman/homelab.git"
       version: ansible
-
-      dest: "~/r/github.com/cceckman/homelab"
-
+      dest: "{{ homelab.path }}"
       depth: 1
       single_branch: true
       update: true
       force: true
       clone: true
   - include_role:
-      role: "~/r/github.com/cceckman/homelab/roles/autoconfigure"
+      role: "{{ homelab.path }}/roles/autoconfigure"
 
