@@ -1,9 +1,11 @@
 #! /bin/bash -eu
 # Set up a Debian / Ubuntu machine to my liking, via Ansible.
 
-if test "$1" = "--full"
+if test "$#" -ge 1 && test "$1" = "--full"
 then
-  VARS="-e full_home"
+  VARS="-e full_home=yes"
+else
+  VARS=""
 fi
 
 sudo apt install -y ansible curl
