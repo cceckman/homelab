@@ -1,0 +1,3 @@
+---
+- name: "Bootstrap a bounce host for IPMI"
+
