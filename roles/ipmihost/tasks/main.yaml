@@ -1,0 +1,23 @@
+- name: "Update baseline packages"
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: true
+- name: "Install DHCP server"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - isc-dhcp-server
+      - isc-dhcp-dev
+# - name: "Provide DHCP server configuration"
+#   become: true
+#   ansible.builtin.copy:
+#     path: /etc/dhcp/dhcpd.conf
+#     src: dhcpcd.conf
+# - name: "Provide DHCP server binding"
+#   become: true
+#   ansible.builtin.copy:
+#     path: /etc/default/isc-dhcp-server
+#     src: isc-dhcp-server
+
