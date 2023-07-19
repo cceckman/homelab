@@ -1,0 +1,10 @@
+[Match]
+Name=eth0.30
+Type=vlan
+
+[Network]
+Description=Management vlan
+DHCP=false
+
+[Address]
+Address=192.168.3.1/24

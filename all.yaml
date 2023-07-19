@@ -1,0 +1,6 @@
+---
+- name: "Configure ipmi host server"
+  gather_facts: false
+  hosts: rack18
+  roles:
+    - ipmihost

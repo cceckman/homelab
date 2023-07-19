@@ -1,23 +1,42 @@
-- name: "Update baseline packages"
+# - name: "Update baseline packages"
+#   become: true
+#   ansible.builtin.apt:
+#     update_cache: true
+#     cache_valid_time: 3600
+#     upgrade: true
+# - name: "Mount qboot"
+#   become: true
+#   ansible.posix.mount:
+#     boot: true
+#     state: mounted
+#     path: /mnt/qboot
+#     fstype: vfat
+#     src: /dev/disk/by-partlabel/QBOOTUSB
+- name: "Configure static IP"
   become: true
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-    upgrade: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/network/
+    src: network/
+- name: "Restart networkd"
+  become: true
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
 - name: "Install DHCP server"
   become: true
   ansible.builtin.apt:
     pkg:
       - isc-dhcp-server
       - isc-dhcp-dev
-# - name: "Provide DHCP server configuration"
-#   become: true
-#   ansible.builtin.copy:
-#     path: /etc/dhcp/dhcpd.conf
-#     src: dhcpcd.conf
-# - name: "Provide DHCP server binding"
-#   become: true
-#   ansible.builtin.copy:
-#     path: /etc/default/isc-dhcp-server
-#     src: isc-dhcp-server
+      - ipmitool
+- name: "Provide DHCP server configuration"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/dhcp/dhcpd.conf
+    src: dhcpd.conf
+- name: "Restart DHCP server"
+  become: true
+  ansible.builtin.systemd:
+    name: isc-dhcp-server
+    state: restarted
 
