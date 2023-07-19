@@ -1,0 +1,4 @@
+TFTP_USERNAME="tftp"
+TFTP_DIRECTORY="/mnt/qboot/netboot"
+TFTP_ADDRESS="192.168.2.1:69"
+TFTP_OPTIONS="-4 --secure -vvv"

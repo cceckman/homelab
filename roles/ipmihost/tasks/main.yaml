@@ -4,14 +4,14 @@
 #     update_cache: true
 #     cache_valid_time: 3600
 #     upgrade: true
-# - name: "Mount qboot"
-#   become: true
-#   ansible.posix.mount:
-#     boot: true
-#     state: mounted
-#     path: /mnt/qboot
-#     fstype: vfat
-#     src: /dev/disk/by-partlabel/QBOOTUSB
+- name: "Mount qboot"
+  become: true
+  ansible.posix.mount:
+    boot: true
+    state: mounted
+    path: /mnt/qboot
+    fstype: ext4
+    src: /dev/disk/by-label/QBOOTUSB
 - name: "Configure static IP"
   become: true
   ansible.builtin.copy:
@@ -22,18 +22,62 @@
   ansible.builtin.systemd:
     name: systemd-networkd
     state: restarted
-- name: "Install DHCP server"
+- name: "Check for netboot content"
+  become: true
+  register: netstat
+  ansible.builtin.stat:
+    path: /mnt/qboot/netboot.tar.gz
+- name: "Download netboot image"
+  become: true
+  when: netstat.stat.exists == False
+  ansible.builtin.get_url:
+    url: http://http.us.debian.org/debian/dists/bookworm/main/installer-amd64/current/images/netboot/netboot.tar.gz
+    dest: /mnt/qboot/
+- name: "Clean directory for netstat extraction"
+  become: true
+  when: netstat.stat.exists == False
+  ansible.builtin.file:
+    dest: /mnt/qboot/netboot/
+    state: absent
+- name: "Clean directory for netstat extraction"
+  become: true
+  when: netstat.stat.exists == False
+  ansible.builtin.file:
+    dest: /mnt/qboot/netboot/
+    state: directory
+- name: "Decompress netboot"
+  become: true
+  when: netstat.stat.exists == False
+  ansible.builtin.unarchive:
+    src: /mnt/qboot/netboot.tar.gz
+    remote_src: true
+    dest: /mnt/qboot/netboot
+- name: "Install DHCP and TFTP server"
   become: true
   ansible.builtin.apt:
     pkg:
       - isc-dhcp-server
       - isc-dhcp-dev
       - ipmitool
+      - tftpd-hpa
+- name: "Provide TFTP server configuration"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/default/tftpd-hpa
+    src: tftpd-hpa
+- name: "Restart TFTP server"
+  become: true
+  ansible.builtin.systemd:
+    name: tftpd-hpa
+    state: restarted
 - name: "Provide DHCP server configuration"
   become: true
   ansible.builtin.copy:
     dest: /etc/dhcp/dhcpd.conf
     src: dhcpd.conf
+- name: "Kill dhcpd"
+  become: true
+  ansible.builtin.shell: "pkill dhcpd; rm /var/run/dhcpd.pid"
 - name: "Restart DHCP server"
   become: true
   ansible.builtin.systemd:
