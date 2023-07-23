@@ -70,11 +70,16 @@
   ansible.builtin.systemd:
     name: tftpd-hpa
     state: restarted
-- name: "Provide DHCP server configuration"
+- name: "Provide DHCPd configuration"
   become: true
   ansible.builtin.copy:
     dest: /etc/dhcp/dhcpd.conf
     src: dhcpd.conf
+- name: "Provide isc-dhcp-server command-line config"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/default/isc-dhcp-server
+    src: isc-dhcp-server
 - name: "Kill dhcpd"
   become: true
   ansible.builtin.shell: "pkill dhcpd; rm /var/run/dhcpd.pid"
