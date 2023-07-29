@@ -1,0 +1,41 @@
+- name: "Prepare backup directory"
+  ansible.builtin.file:
+    path: /fastpool/prox_config_backup/scripts
+    state: directory
+  register: pve_backup_dir
+- name: "Copy backup script"
+  ansible.builtin.copy:
+    src: prox_config_backup/prox_config_backup.sh
+    dest: "{{ pve_backup_dir.path }}/prox_config_backup.sh"
+    mode: 0544
+- name: "Copy restore script"
+  ansible.builtin.copy:
+    src: prox_config_backup/prox_config_restore.sh
+    dest: "{{ pve_backup_dir.path }}/prox_config_restore.sh"
+    mode: 0544
+- name: "Configure cron"
+  ansible.builtin.cron:
+    name: proxmox-backup.cron
+    hour: 4
+    day: "*"
+    job: "BACK_DIR=/fastpool/prox/config_backup/ {{ pve_backup_dir.path }}/prox_config_backup.sh"
+- name: "Create tempdir for immediate backup"
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: backup
+  register: backup_tempdir
+- name: "Run backup"
+  ansible.builtin.shell:
+    cmd: "BACK_DIR={{ backup_tempdir.path }} {{ pve_backup_dir.path }}/prox_config_backup.sh"
+- name: "Find backup"
+  ansible.builtin.find:
+    paths: "{{ backup_tempdir.path }}"
+  register: "backup_file"
+- name: "Download backup"
+  ansible.builtin.fetch:
+    src: "{{ backup_file.files[0].path }}"
+    dest: ".backup/"
+    flat: true
+
+
+

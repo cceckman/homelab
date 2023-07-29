@@ -1,0 +1,3 @@
+- name: "Proxmox config backup"
+  ansible.builtin.include_tasks: proxmox-backup.yaml
+

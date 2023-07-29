@@ -4,3 +4,8 @@
   hosts: rack18
   roles:
     - ipmihost
+- name: "Configure vm server"
+  gather_facts: false
+  hosts: rack19
+  roles:
+    - vmhost
