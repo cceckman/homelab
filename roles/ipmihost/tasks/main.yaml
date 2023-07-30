@@ -19,3 +19,4 @@
   ansible.builtin.include_tasks: netboot.yaml
 - name: "Configure UPS"
   ansible.builtin.include_tasks: power.yaml
+
