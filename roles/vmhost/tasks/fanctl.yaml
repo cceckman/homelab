@@ -16,15 +16,4 @@
     name: fanctl
     enabled: true
     state: restarted
-- name: "Stop (old) fanbang"
-  become: true
-  ansible.builtin.systemd:
-    name: fanbang
-    enabled: false
-    state: stopped
-- name: "Delete fanbang unit"
-  become: true
-  ansible.builtin.file:
-    path: /etc/systemd/system/fanbang.service
-    state: absent
 
