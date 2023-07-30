@@ -25,10 +25,6 @@
 - name: "Delete fanbang unit"
   become: true
   ansible.builtin.file:
-    path: /etc/systemd/system/fanctl.service
-    state: deleted
-- name: "Install nvme cli"
-  become: true
-  ansible.builtin.apt:
-    pkgs:
-      - nvme-cli
+    path: /etc/systemd/system/fanbang.service
+    state: absent
+

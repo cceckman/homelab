@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Bang-bang control for system fans.
 # Based on https://gist.github.com/qlyoung/44282a8283879d967b0c4314e7d4fb82,
@@ -10,38 +10,54 @@
 
 ipmitool raw 0x30 0x45 1
 
-MAXTEMP=50
+# i350bb in particular runs hot, around 50
+MAXTEMP=52
 
-# Upper fan limit: 50%
-FAST_PCT=50
-# Lower fan limit: 10%
-SLOW_PCT=10
+# Upper fan limit, in percent
+FAST_PCT=40
+# Lower fan limit, in percent
+SLOW_PCT=8
 
 # Convert from percentage to byte
 UPPER="$(( FAST_PCT * 255 / 100 ))"
 LOWER="$(( SLOW_PCT * 255 / 100 ))"
 
+SAMPLES="/tmp/fanbang"
 # Then periodically run at "fast" or "low":
 while true
 do
-  MAX=0
-
+  echo >&2 "Starting thermal sampling cycle; threshold $MAXTEMP degrees C"
+  # Collect aggregate data:
+  echo -n >"$SAMPLES"
   ipmitool sdr type temperature \
-    grep ' ok ' | \
-    cut -d'|' -f5 | \
-    grep -o '[0-9]+' | \
-  while read VALUE
+    | grep ' ok ' \
+    | sed -n 's/^\([^|]*\).*|[^|0-9]*\([0-9]\+\)[^|]*$/\1 : \2/p' \
+    | tr -s '[:space:]' \
+    >>"$SAMPLES"
+  ls /sys/class/hwmon/*/temp*_input \
+  | while read INPUT
   do
-    if test -n "$VALUE" && test "$VALUE" -gt "$MAX"
-    then
-      MAX="$VALUE"
-    fi
+    cat "$(dirname $INPUT)/name" | tr -d '\r\n' >>"$SAMPLES"
+    echo ": $(( $(cat $INPUT) / 1000 ))" >>"$SAMPLES"
   done
-  if test "$MAX" -gt "$MAXTEMP"
+
+  THROTTLE=false
+  while read LINE
+  do
+    VALUE="$(echo "$LINE" | cut -d':' -f2 | tr -d '[:space:]')"
+    if test -n "$VALUE" && test "$VALUE" -ge "$MAXTEMP"
+    then
+      echo >&2 "Throttling from input $(echo "$LINE" | cut -d':' -f1): $VALUE degrees C"
+      THROTTLE=true
+    fi
+  done <"$SAMPLES"
+  if test "$THROTTLE" = "true"
   then
-    ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$UPPER"
+    echo >&2 "Fast fan: ${FAST_PCT}%"
+    ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$UPPER" >/dev/null
   else
-    ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$LOWER"
+    echo >&2 "Slow fan: ${SLOW_PCT}%"
+    ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$LOWER" >/dev/null
   fi
   sleep 10
 done
