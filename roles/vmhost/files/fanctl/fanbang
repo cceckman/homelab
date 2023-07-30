@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Bang-bang control for system fans.
+# Based on https://gist.github.com/qlyoung/44282a8283879d967b0c4314e7d4fb82,
+# but with controls from https://forums.servethehome.com/index.php?resources/supermicro-x9-x10-x11-fan-speed-control.20/
+# (which match what I observe.)
+
+
+# At startup, switch to the "full" fan control- briefly:a
+
+ipmitool raw 0x30 0x45 1
+
+# Upper fan limit: 50%
+UPPER=50
+# Lower fan limit: 10%
+LOWER=10
+
+# Convert from percentage to byte
+UPPER="$(( UPPER * 255 / 100 ))"
+LOWER="$(( LOWER * 255 / 100 ))"
+
+# Then periodically run at "fast" or "low":
+while true
+do
+  MAX=0
+
+  ipmitool sdr type temperature \
+    grep ' ok ' | \
+    cut -d'|' -f5 | \
+    grep -o '[0-9]*' | \
+  while read VALUE
+  do
+    if test "$VALUE" -gt "$MAX"
+    then
+      MAX="$VALUE"
+    fi
+  done
+  if test "$VALUE" -gt "50"
+  then
+    ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$UPPER"
+  else
+    ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$LOWER"
+  fi
+  sleep 10
+don

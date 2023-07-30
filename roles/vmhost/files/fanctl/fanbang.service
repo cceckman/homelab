@@ -1,0 +1,11 @@
+[Unit]
+Description=
+After=openipmi.service
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Type=exec
+ExecStart=/usr/local/bin/fanbang
+Restart=always

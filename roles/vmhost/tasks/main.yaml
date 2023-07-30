@@ -7,4 +7,6 @@
   ansible.builtin.include_tasks: proxmox-backup.yaml
 - name: "UPS response"
   ansible.builtin.include_tasks: power.yaml
+- name: "Fan control"
+  ansible.builtin.include_tasks: fanctl.yaml
 
