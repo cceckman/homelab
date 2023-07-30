@@ -7,14 +7,15 @@
 
 
 # At startup, switch to the "full" fan control- briefly:
-
 ipmitool raw 0x30 0x45 1
+# And get hwmon for drives:
+modprobe drivetemp
 
 # i350bb in particular runs hot, around 50
 MAXTEMP=52
 
 # Upper fan limit, in percent
-FAST_PCT=40
+FAST_PCT=25
 # Lower fan limit, in percent
 SLOW_PCT=8
 
@@ -40,8 +41,12 @@ do
     NUM="$(basename $INPUT | grep -o '[0-9]')"
     cat \
       "$(dirname $INPUT)/name" \
-      "$(dirname $INPUT)/temp${NUM}_label" \
      | tr '\r\n' ' ' >>"$SAMPLES"
+    LABEL="$(dirname $INPUT)/temp${NUM}_label" 
+    if test -f "$LABEL"
+    then
+      cat "$LABEL" | tr '\r\n' ' ' >>"$SAMPLES"
+    fi
     echo ": $(( $(cat $INPUT) / 1000 ))" >>"$SAMPLES"
   done
 
