@@ -1,0 +1,46 @@
+- name: "Check for netboot content"
+  become: true
+  register: netboot
+  ansible.builtin.stat:
+    path: /mnt/qboot/netboot.tar.gz
+- name: "Download netboot image"
+  become: true
+  when: netboot.stat.exists == False
+  ansible.builtin.get_url:
+    url: http://http.us.debian.org/debian/dists/bookworm/main/installer-amd64/current/images/netboot/netboot.tar.gz
+    dest: /mnt/qboot/
+- name: "Clean directory for netboot extraction"
+  become: true
+  when: netboot.stat.exists == False
+  ansible.builtin.file:
+    dest: /mnt/qboot/netboot/
+    state: absent
+- name: "Clean directory for netboot extraction"
+  become: true
+  when: netboot.stat.exists == False
+  ansible.builtin.file:
+    dest: /mnt/qboot/netboot/
+    state: directory
+- name: "Decompress netboot"
+  become: true
+  when: netboot.stat.exists == False
+  ansible.builtin.unarchive:
+    src: /mnt/qboot/netboot.tar.gz
+    remote_src: true
+    dest: /mnt/qboot/netboot
+- name: "Install TFTP server"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - tftpd-hpa
+- name: "Provide TFTP server configuration"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/default/tftpd-hpa
+    src: tftpd-hpa
+- name: "Restart TFTP server"
+  become: true
+  ansible.builtin.systemd:
+    name: tftpd-hpa
+    state: restarted
+

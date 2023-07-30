@@ -1,0 +1,7 @@
+- name: "Install UPS server"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - apcupsd
+      - apctest
+

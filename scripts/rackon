@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo 'power on' | ssh rack18.ts './ipmitool'

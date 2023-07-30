@@ -1,9 +1,3 @@
-# - name: "Update baseline packages"
-#   become: true
-#   ansible.builtin.apt:
-#     update_cache: true
-#     cache_valid_time: 3600
-#     upgrade: true
 - name: "Mount qboot"
   become: true
   ansible.posix.mount:
@@ -12,82 +6,16 @@
     path: /mnt/qboot
     fstype: ext4
     src: /dev/disk/by-label/QBOOTUSB
-- name: "Configure static IP"
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/systemd/network/
-    src: network/
-- name: "Restart networkd"
-  become: true
-  ansible.builtin.systemd:
-    name: systemd-networkd
-    state: restarted
-- name: "Check for netboot content"
-  become: true
-  register: netstat
-  ansible.builtin.stat:
-    path: /mnt/qboot/netboot.tar.gz
-- name: "Download netboot image"
-  become: true
-  when: netstat.stat.exists == False
-  ansible.builtin.get_url:
-    url: http://http.us.debian.org/debian/dists/bookworm/main/installer-amd64/current/images/netboot/netboot.tar.gz
-    dest: /mnt/qboot/
-- name: "Clean directory for netstat extraction"
-  become: true
-  when: netstat.stat.exists == False
-  ansible.builtin.file:
-    dest: /mnt/qboot/netboot/
-    state: absent
-- name: "Clean directory for netstat extraction"
-  become: true
-  when: netstat.stat.exists == False
-  ansible.builtin.file:
-    dest: /mnt/qboot/netboot/
-    state: directory
-- name: "Decompress netboot"
-  become: true
-  when: netstat.stat.exists == False
-  ansible.builtin.unarchive:
-    src: /mnt/qboot/netboot.tar.gz
-    remote_src: true
-    dest: /mnt/qboot/netboot
-- name: "Install DHCP and TFTP server"
+- name: "Install ipmitool"
   become: true
   ansible.builtin.apt:
     pkg:
-      - isc-dhcp-server
-      - isc-dhcp-dev
       - ipmitool
-      - tftpd-hpa
-- name: "Provide TFTP server configuration"
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/default/tftpd-hpa
-    src: tftpd-hpa
-- name: "Restart TFTP server"
-  become: true
-  ansible.builtin.systemd:
-    name: tftpd-hpa
-    state: restarted
-- name: "Provide DHCPd configuration"
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/dhcp/dhcpd.conf
-    src: dhcpd.conf
-- name: "Provide isc-dhcp-server command-line config"
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/default/isc-dhcp-server
-    src: isc-dhcp-server
-- name: "Kill dhcpd"
-  become: true
-  ignore_errors: true # pretty flaky
-  ansible.builtin.shell: "pkill dhcpd; rm /var/run/dhcpd.pid"
-- name: "Restart DHCP server"
-  become: true
-  ignore_errors: true # pretty flaky
-  ansible.builtin.systemd:
-    name: isc-dhcp-server
-    state: restarted
-
+- name: "Configure network"
+  ansible.builtin.include_tasks: network.yaml
+- name: "Configure DHCP"
+  ansible.builtin.include_tasks: dhcp.yaml
+- name: "Configure TFTP"
+  ansible.builtin.include_tasks: netboot.yaml
+- name: "Configure UPS"
+  ansible.builtin.include_tasks: power.yaml

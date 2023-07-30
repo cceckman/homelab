@@ -1,0 +1,11 @@
+- name: "Configure static IPs"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/network/
+    src: network/
+- name: "Restart networkd"
+  become: true
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+
