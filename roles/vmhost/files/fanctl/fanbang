@@ -31,13 +31,17 @@ do
   echo -n >"$SAMPLES"
   ipmitool sdr type temperature \
     | grep ' ok ' \
-    | sed -n 's/^\([^|]*\).*|[^|0-9]*\([0-9]\+\)[^|]*$/\1 : \2/p' \
+    | sed -n 's/^\([^|]*\).*|[^|0-9]*\([0-9]\+\)[^|]*$/IPMI \1 : \2/p' \
     | tr -s '[:space:]' \
     >>"$SAMPLES"
   ls /sys/class/hwmon/*/temp*_input \
   | while read INPUT
   do
-    cat "$(dirname $INPUT)/name" | tr -d '\r\n' >>"$SAMPLES"
+    NUM="$(basename $INPUT | grep -o '[0-9]')"
+    cat \
+      "$(dirname $INPUT)/name" \
+      "$(dirname $INPUT)/temp${NUM}_label" \
+     | tr '\r\n' ' ' >>"$SAMPLES"
     echo ": $(( $(cat $INPUT) / 1000 ))" >>"$SAMPLES"
   done
 
