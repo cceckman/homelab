@@ -3,16 +3,32 @@
   ansible.builtin.copy:
     src: fanctl/fanbang
     dest: /usr/local/bin/fanbang
-- name: "Install fanbang unit"
+    mode: 0544
+- name: "Install fanctl unit"
   become: true
   ansible.builtin.copy:
-    src: fanctl/fanbang.service
-    dest: /etc/systemd/system/fanbang.service
-- name: "Restart apcupsd"
+    src: fanctl/fanctl.service
+    dest: /etc/systemd/system/fanctl.service
+- name: "Restart fanctl"
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
-    name: fanbang
+    name: fanctl
     enabled: true
     state: restarted
-
+- name: "Stop (old) fanbang"
+  become: true
+  ansible.builtin.systemd:
+    name: fanbang
+    enabled: false
+    state: stopped
+- name: "Delete fanbang unit"
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/fanctl.service
+    state: deleted
+- name: "Install nvme cli"
+  become: true
+  ansible.builtin.apt:
+    pkgs:
+      - nvme-cli

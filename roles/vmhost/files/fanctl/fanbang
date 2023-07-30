@@ -6,18 +6,20 @@
 # (which match what I observe.)
 
 
-# At startup, switch to the "full" fan control- briefly:a
+# At startup, switch to the "full" fan control- briefly:
 
 ipmitool raw 0x30 0x45 1
 
+MAXTEMP=50
+
 # Upper fan limit: 50%
-UPPER=50
+FAST_PCT=50
 # Lower fan limit: 10%
-LOWER=10
+SLOW_PCT=10
 
 # Convert from percentage to byte
-UPPER="$(( UPPER * 255 / 100 ))"
-LOWER="$(( LOWER * 255 / 100 ))"
+UPPER="$(( FAST_PCT * 255 / 100 ))"
+LOWER="$(( SLOW_PCT * 255 / 100 ))"
 
 # Then periodically run at "fast" or "low":
 while true
@@ -27,19 +29,20 @@ do
   ipmitool sdr type temperature \
     grep ' ok ' | \
     cut -d'|' -f5 | \
-    grep -o '[0-9]*' | \
+    grep -o '[0-9]+' | \
   while read VALUE
   do
-    if test "$VALUE" -gt "$MAX"
+    if test -n "$VALUE" && test "$VALUE" -gt "$MAX"
     then
       MAX="$VALUE"
     fi
   done
-  if test "$VALUE" -gt "50"
+  if test "$MAX" -gt "$MAXTEMP"
   then
     ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$UPPER"
   else
     ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$LOWER"
   fi
   sleep 10
-don
+done
+
