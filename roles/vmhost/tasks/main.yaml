@@ -1,3 +1,8 @@
+- name: "Install ipmitool"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - ipmitool
 - name: "Proxmox config backup"
   ansible.builtin.include_tasks: proxmox-backup.yaml
 - name: "UPS response"
