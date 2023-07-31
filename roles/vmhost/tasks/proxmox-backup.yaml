@@ -25,13 +25,17 @@
     suffix: backup
   register: backup_tempdir
 - name: "Run backup"
+  ignore_errors: true # OK if we missed it
+  register: "adhoc_backup"
   ansible.builtin.shell:
     cmd: "BACK_DIR={{ backup_tempdir.path }} {{ pve_backup_dir.path }}/scripts/prox_config_backup.sh"
 - name: "Find backup"
+  when: "adhoc_backup.rc == 0"
   ansible.builtin.find:
     paths: "{{ backup_tempdir.path }}"
   register: "backup_file"
 - name: "Download backup"
+  when: "adhoc_backup.rc == 0"
   ansible.builtin.fetch:
     src: "{{ backup_file.files[0].path }}"
     dest: ".backup/"
