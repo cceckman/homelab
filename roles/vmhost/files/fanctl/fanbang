@@ -11,8 +11,13 @@ ipmitool raw 0x30 0x45 1
 # And get hwmon for drives:
 modprobe drivetemp
 
-# i350bb in particular runs hot, around 50
-MAXTEMP=52
+# i350bb in particular runs hot, even with low fans.
+#
+# Bang-bang control:
+# - If any is over MAXTEMP, switch to high speed
+# - If all are under MINTEMP, switch to low speed
+MAXTEMP=65
+MINTEMP=55
 
 # Upper fan limit, in percent
 FAST_PCT=25
@@ -24,10 +29,8 @@ UPPER="$(( FAST_PCT * 255 / 100 ))"
 LOWER="$(( SLOW_PCT * 255 / 100 ))"
 
 SAMPLES="/tmp/fanbang"
-# Then periodically run at "fast" or "low":
-while true
-do
-  echo >&2 "Starting thermal sampling cycle; threshold $MAXTEMP degrees C"
+sample() {
+  echo >&2 "Starting thermal sampling cycle; [$MAXTEMP, $MINTEMP]"
   # Collect aggregate data:
   echo -n >"$SAMPLES"
   ipmitool sdr type temperature \
@@ -42,30 +45,48 @@ do
     cat \
       "$(dirname $INPUT)/name" \
      | tr '\r\n' ' ' >>"$SAMPLES"
-    LABEL="$(dirname $INPUT)/temp${NUM}_label" 
+    LABEL="$(dirname $INPUT)/temp${NUM}_label"
     if test -f "$LABEL"
     then
       cat "$LABEL" | tr '\r\n' ' ' >>"$SAMPLES"
     fi
     echo ": $(( $(cat $INPUT) / 1000 ))" >>"$SAMPLES"
   done
+}
 
-  THROTTLE=false
+# Then periodically run at "fast" or "low":
+while true
+do
+  sample
+
+  OVER_MAX=false
+  OVER_MIN=false
+
   while read LINE
   do
     VALUE="$(echo "$LINE" | cut -d':' -f2 | tr -d '[:space:]')"
-    if test -n "$VALUE" && test "$VALUE" -ge "$MAXTEMP"
+    if test -z "$VALUE"
     then
-      echo >&2 "Throttling from input $(echo "$LINE" | cut -d':' -f1): $VALUE degrees C"
-      THROTTLE=true
+      continue
+    fi
+    if test "$VALUE" -ge "$MAXTEMP"
+    then
+      echo >&2 "Input $(echo "$LINE" | cut -d':' -f1) is high: $VALUE degrees C"
+      OVER_MAX=true
+    fi
+    if test "$VALUE" -ge "$MINTEMP"
+    then
+      OVER_MIN=true
     fi
   done <"$SAMPLES"
-  if test "$THROTTLE" = "true"
+
+  if test "$OVER_MAX" = true
   then
-    echo >&2 "Fast fan: ${FAST_PCT}%"
+    echo >&2 "Activating fast fan: ${FAST_PCT}%"
     ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$UPPER" >/dev/null
-  else
-    echo >&2 "Slow fan: ${SLOW_PCT}%"
+  elif test "$OVER_MIN" = false
+  then
+    echo >&2 "Activating slow fan: ${SLOW_PCT}%"
     ipmitool raw 0x30 0x70 0x66 0x01 0x00 "$LOWER" >/dev/null
   fi
   sleep 10
