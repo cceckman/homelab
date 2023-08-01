@@ -1,0 +1,27 @@
+---
+- name: "Apply LSI EFI files to USB"
+  gather_facts: false
+  hosts: rack19
+  tasks:
+    - name: "Make download directory"
+      ansible.builtin.file:
+        path: /tmp/lsi-efi
+        state: directory
+    - name: "Unarchive"
+      # https://www.broadcom.com/support/knowledgebase/1211161503938/lsi-preboot-efi-packages-for-flashing-lsi-products"
+      with_items:
+        - ftp://tsupport:tsupport@ftp0.broadcom.com/private/3Ware/LSI_PreBoot/EFI/shell_s2flash.zip
+        - ftp://tsupport:tsupport@ftp0.broadcom.com/private/3Ware/LSI_PreBoot/EFI/EFI_LSIGET_logs.zip
+        - ftp://tsupport:tsupport@ftp0.broadcom.com/private/3Ware/LSI_PreBoot/EFI/shell_megacli.zip
+        - ftp://tsupport:tsupport@ftp0.broadcom.com/private/3Ware/LSI_PreBoot/EFI/shell_storcli.zip
+      ansible.builtin.unarchive:
+        copy: false
+        dest: /mnt/QBOOTEFI
+        src: "{{ item }}"
+   #- name: "Unzip"
+   #  ansible.builtin.unarchive:
+   #    copy: false
+   #    dest: /tmp/lsi-efi
+   #    src: "{{ item.path }}"
+   #  with_items: "{{ files.files }}"
+

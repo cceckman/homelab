@@ -9,4 +9,6 @@
   ansible.builtin.include_tasks: power.yaml
 - name: "Fan control"
   ansible.builtin.include_tasks: fanctl.yaml
+- name: "Configure PCIe passthrough"
+  ansible.builtin.include_tasks: passthrough.yaml
 

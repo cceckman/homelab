@@ -1,0 +1,39 @@
+- name: "Configure kernel command line for IOMMU"
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    backup: true
+    search_string: 'GRUB_CMDLINE_LINUX_DEFAULT='
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt"'
+  register: 'grub_edited'
+- name: "Run update-grub to apply new settings"
+  when: 'grub_edited.changed'
+  ansible.builtin.shell:
+    cmd: 'update-grub'
+  register: 'grub_updated'
+- name: "Ensure VFIO drivers are loaded"
+  with_items:
+    - 'vfio'
+    - 'vfio_iommu_type1'
+    - 'vfio_pci'
+    - 'vfio_irqd'
+  ansible.builtin.lineinfile:
+    path: /etc/modules
+    backup: true
+    line: '{{ item }}'
+  register: 'modules_edited'
+- name: "Bind LSI Megaraid to vfio-pci"
+  ansible.builtin.lineinfile:
+    create: true
+    path: /etc/modprobe.d/lsi-megaraid-passthrough.modprobe
+    backup: true
+    line: 'options vfio_pci ids=1000:005b'
+  register: 'modprobe_edited'
+- name: "Update initramfs"
+  when: 'modules_edited.changed or modprobe_edited.changed'
+  ansible.builtin.shell:
+    cmd: "update-initramfs -u -k all"
+  register: 'initramfs_updated'
+- name: "Reboot"
+  when: 'not (initramfs_updated is skipped) or not (grub_updated is skipped)'
+  ansible.builtin.reboot: {}
+
