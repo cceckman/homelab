@@ -1,0 +1,7 @@
+- name: "Install restic backup server"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    pkg:
+      - restic
+

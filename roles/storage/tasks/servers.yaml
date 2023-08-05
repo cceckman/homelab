@@ -1,0 +1,9 @@
+- name: "Install network filesystem servers"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    pkg:
+      - nfs-kernel-server
+      - samba
+      - samba-client
+

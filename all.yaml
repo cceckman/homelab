@@ -16,11 +16,13 @@
     - storage
 
 - name: "Install Tailscale"
-  gather_facts: false
+  # Playbook requires facts to collect the distribution:
+  gather_facts: true
   hosts:
     - storage
     - ipmihost
   roles:
     - artis3n.tailscale
   vars:
+    # We perform authentication after the fact, manually
     tailscale_up_skip: true

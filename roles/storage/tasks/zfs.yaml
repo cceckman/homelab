@@ -1,0 +1,47 @@
+- name: "Gather release name"
+  register: codename
+  ansible.builtin.command:
+    cmd: "lsb_release -cs"
+- name: "Enable backports"
+  become: true
+  vars:
+    release_name: "{{ codename.stdout }}"
+  ansible.builtin.template:
+    dest: /etc/apt/sources.list.d/backports.list
+    src: backports.list
+    mode: '0644'
+- name: "Enable contrib on main sources.list file"
+  become: true
+  ansible.builtin.shell:
+    # A little bit of magic:
+    # - Match lines starting with deb: /^deb/
+    # - With those lines: { ... }
+    # - For any lines without "contrib": /contrib/!
+    # - Replace "main" with "main contrib": s/main/main contib/
+    #
+    # Invocation is in-place (-i) on file /etc/apt/sources.list
+    cmd: "sed -i '/^deb/{ /contrib/!s/main/main contrib/ }' /etc/apt/sources.list"
+- name: "Install linux headers"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    update_cache: true
+    pkg:
+      - linux-headers-amd64
+- name: "Install zfs"
+  become: true
+  ansible.builtin.apt:
+    # Recommended to install from backports, but zfsutils-linux doesn't have
+    # a backports release yet. Pull from stable instead.
+    #
+    # default_release: "{{ codename.stdout }}-backports"
+    pkg:
+      - zfsutils-linux
+      - zfs-dkms
+      - zfs-zed
+  register: zfs_kernel
+- name: "Reboot after dkms changes"
+  become: true
+  when: "zfs_kernel.changed"
+  ansible.builtin.reboot: {}
+
