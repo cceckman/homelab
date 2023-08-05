@@ -9,3 +9,18 @@
   hosts: rack19
   roles:
     - vmhost
+- name: "Configure storage server"
+  gather_facts: false
+  hosts: storage
+  roles:
+    - storage
+
+- name: "Install Tailscale"
+  gather_facts: false
+  hosts:
+    - storage
+    - ipmihost
+  roles:
+    - artis3n.tailscale
+  vars:
+    tailscale_up_skip: true
