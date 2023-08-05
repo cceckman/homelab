@@ -15,12 +15,6 @@
   ansible.builtin.include_tasks: network.yaml
 - name: "Configure DHCP"
   ansible.builtin.include_tasks: dhcp.yaml
-# - name: "Configure TFTP"
-#   ansible.builtin.include_tasks: netboot.yaml
-- name: "De-configure TFTP"
-  ansible.builtin.systemd:
-    name: tftpd-hpa
-    state: stopped
 - name: "Configure UPS"
   ansible.builtin.include_tasks: power.yaml
 
