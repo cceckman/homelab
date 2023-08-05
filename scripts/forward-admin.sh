@@ -5,8 +5,8 @@ echo >&2 "Starting local port forwarding..."
 echo >&2 "  :8192 BMCWeb"
 echo >&2 "  :8006 Proxmox console"
 
-ssh -N -v \
+ssh -v \
   -L 8192:192.168.3.190:443 \
   -L 8006:192.168.2.191:8006 \
-  rack18
+  rack18 -- "sh -c './ipmitool power on ; read NONE'"
 
