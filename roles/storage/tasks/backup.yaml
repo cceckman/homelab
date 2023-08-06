@@ -24,7 +24,6 @@
     - config.env
     - credentials
     - password
-    - config.rc
   ansible.builtin.copy:
     decrypt: true
     mode: '0400'

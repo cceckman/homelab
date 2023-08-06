@@ -44,4 +44,11 @@
   become: true
   when: "zfs_kernel.changed"
   ansible.builtin.reboot: {}
-
+- name: "Mount perpetual filesystem"
+  become: true
+  ansible.posix.mount:
+    backup: true
+    path: /mnt/bigdata/perpetual
+    src: bigdata/perpetual
+    state: mounted
+    fstype: zfs
