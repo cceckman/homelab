@@ -4,4 +4,31 @@
     cache_valid_time: 3600
     pkg:
       - restic
+- name: "Prepare restic user"
+  become: true
+  ansible.builtin.user:
+    name: restic
+    groups:
+      - storage-access
+    password: "!"
+    password_lock: true
+  register: restic_user
+- name: "Restrict restic home directory"
+  become: true
+  ansible.builtin.file:
+    path: "{{ restic_user.home }}"
+    mode: 0700
+- name: "Copy files into Restic home"
+  become: true
+  with_items:
+    - config.env
+    - credentials
+    - password
+    - config.rc
+  ansible.builtin.copy:
+    decrypt: true
+    mode: '0400'
+    dest: "{{ restic_user.home }}/{{ item }}"
+    src: "restic/{{ item }}.vault"
+    owner: restic
 

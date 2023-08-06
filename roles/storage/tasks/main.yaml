@@ -1,5 +1,9 @@
 - name: "Install zfs support"
   ansible.builtin.include_tasks: zfs.yaml
+- name: "Create storage-access group"
+  become: true
+  ansible.builtin.group:
+    name: storage-access
 - name: "Install backup support"
   ansible.builtin.include_tasks: backup.yaml
 - name: "Install network filesystem servers"

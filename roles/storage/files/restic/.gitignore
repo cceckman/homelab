@@ -1,0 +1,4 @@
+*
+!.gitignore
+!*.vault
+!encrypt-all.sh
