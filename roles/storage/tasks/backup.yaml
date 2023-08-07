@@ -28,6 +28,29 @@
     decrypt: true
     mode: '0400'
     dest: "{{ restic_user.home }}/{{ item }}"
-    src: "restic/{{ item }}.vault"
+    src: "restic-secrets/{{ item }}.vault"
     owner: restic
+- name: "Add unit files"
+  become: true
+  with_items:
+    - restic-bigdata.service
+    - restic-bigdata.timer
+  ansible.builtin.copy:
+    dest: /etc/systemd/system
+    src: "restic-units/{{ item }}"
+- name: "Enable units"
+  become: true
+  with_items:
+    - restic-bigdata.service
+    - restic-bigdata.timer
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ item }}"
+    enabled: true
+- name: "Start timer"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: restic-bigdata.timer
+    state: started
 

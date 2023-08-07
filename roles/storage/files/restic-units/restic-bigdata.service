@@ -1,0 +1,17 @@
+[Unit]
+# Based on https://tdem.in/post/restic-with-systemd/
+Description=Restic backup of "perpetual" dataset
+After=syslog.target
+After=network-online.target
+Requires=mnt-bigdata-perpetual.mount
+After=mnt-bigdata-perpetual.mount
+
+[Service]
+Type=oneshot
+User=restic
+ExecStart=/usr/bin/restic backup /mnt/bigdata/perpetual
+EnvironmentFile=/home/restic/config.env
+
+# Bypass ownership checks - "read / list everything"
+AmbientCapabilities=CAP_DAC_READ_SEARCH
+
