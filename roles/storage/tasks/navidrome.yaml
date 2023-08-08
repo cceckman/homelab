@@ -1,0 +1,58 @@
+- name: "Include navidrome version"
+  ansible.builtin.include_vars:
+    file: navidrome.yaml
+- name: "Prepare navidrome group"
+  become: true
+  ansible.builtin.group:
+    name: navidrome
+- name: "Prepare navidrome user"
+  become: true
+  ansible.builtin.user:
+    name: navidrome
+    group: navidrome
+    groups:
+      - storage-access
+    password: "!"
+    password_lock: true
+- name: "Prepare packages for navidrome"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - ffmpeg
+- name: "Prepare directories for navidrome"
+  become: true
+  with_items:
+    - "/opt/navidrome"
+    - "/var/lib/navidrome"
+  ansible.builtin.file:
+    owner: navidrome
+    group: navidrome
+    path: "{{ item }}"
+    state: directory
+- name: "Read installed navidrome version"
+  become: true
+  ansible.builtin.slurp:
+    src: "/opt/navidrome/VERSION"
+  ignore_errors: true
+  register: "last_navidrome_version"
+- name: "Download and expand navidrome archive"
+  become: true
+  when: "not last_navidrome_version.failed and last_navidrome_version.content == base64(navidrome_version)"
+  ansible.builtin.unarchive:
+    src: "https://github.com/navidrome/navidrome/releases/download/v{{ navidrome_version }}/navidrome_{{ navidrome_version }}_Linux_x86_64.tar.gz"
+    remote_src: true
+    dest: "/opt/navidrome"
+    owner: navidrome
+    group: navidrome
+  register: download
+- name: "Set navidrome download pin"
+  ansible.builtin.debug:
+    var: "download"
+- name: "Set navidrome download pin"
+  when: "not download.skipped"
+  ansible.builtin.file:
+    owner: navidrome
+    group: navidrome
+    path: "/opt/navidrome/VERSION"
+    content: "{{ navidrome_version }}"
+
