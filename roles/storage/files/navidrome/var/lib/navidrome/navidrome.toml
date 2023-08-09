@@ -1,0 +1,10 @@
+MusicFolder="/mnt/bigdata/perpetual/Music/AllMusic"
+Port="4533"
+Address="127.0.0.1"
+
+ReverseProxyUserHeader="Tailscale-User-Login"
+ReverseProxyWhitelist="127.0.0.1/32"
+
+[Prometheus]
+Enabled=true
+
