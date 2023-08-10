@@ -51,4 +51,3 @@
     dest: "/etc/systemd/system/zfs-load-key@.service"
     mode: 0644
 
-
