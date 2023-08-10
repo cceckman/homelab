@@ -44,11 +44,11 @@
   become: true
   when: "zfs_kernel.changed"
   ansible.builtin.reboot: {}
-
-
-
-
-
-
+- name: "Install load-key script"
+  become: true
+  ansible.builtin.copy:
+    src: "zfs-load-key@.service"
+    dest: "/etc/systemd/system/zfs-load-key@.service"
+    mode: 0644
 
 

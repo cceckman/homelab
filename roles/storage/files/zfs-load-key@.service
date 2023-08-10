@@ -1,0 +1,16 @@
+# From https://forum.openmediavault.org/index.php?thread/40525-how-to-auto-load-key-and-mount-natively-encrypted-zfs-pool-no-luks/
+
+[Unit]
+Description=Load ZFS keys
+DefaultDependencies=no
+Before=zfs-mount.service
+After=zfs-import.target
+Requires=zfs-import.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/zfs load-key %I
+
+[Install]
+WantedBy=zfs-mount.service
