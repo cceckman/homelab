@@ -6,7 +6,18 @@ ReverseProxyUserHeader="Tailscale-User-Login"
 ReverseProxyWhitelist="127.0.0.1/32"
 
 CoverArtPriority="embedded,external"
+EnableCoverAnimation=false
+
+[LastFM]
+Enabled=false
+
+[ListenBrainz]
+Enabled=false
+
+[Spotify]
+Enabled=false
 
 [Prometheus]
 Enabled=true
 
+]0;cceckman@cromwell
