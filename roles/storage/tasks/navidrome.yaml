@@ -51,7 +51,7 @@
   ansible.builtin.systemd:
     name: navidrome
     daemon_reload: true
-    state: started
+    state: restarted
     enabled: yes
 - name: "Propagate tailscale"
   become: true

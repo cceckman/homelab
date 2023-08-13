@@ -5,6 +5,8 @@ Address="127.0.0.1"
 ReverseProxyUserHeader="Tailscale-User-Login"
 ReverseProxyWhitelist="127.0.0.1/32"
 
+CoverArtPriority="embedded,external"
+
 [Prometheus]
 Enabled=true
 
