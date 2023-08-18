@@ -37,15 +37,24 @@
     dest: "/opt/navidrome"
     owner: navidrome
     group: navidrome
-- name: "Install navidrome configs"
+- name: "Install navidrome config"
   become: true
   with_items:
     - var/lib/navidrome/navidrome.toml
+  ansible.builtin.copy:
+    src: "navidrome/{{ item }}"
+    dest: "/{{ item }}"
+    mode: 0644
+    user: navidrome
+- name: "Install navidrome unit"
+  become: true
+  with_items:
     - etc/systemd/system/navidrome.service
   ansible.builtin.copy:
     src: "navidrome/{{ item }}"
     dest: "/{{ item }}"
     mode: 0644
+
 - name: "Run Navidrome"
   become: true
   ansible.builtin.systemd:

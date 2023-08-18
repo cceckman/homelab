@@ -1,0 +1,6 @@
+[Unit]
+Description=Autorip CD
+
+[Service]
+Type=oneshot
+ExecStart=abcde /dev/cdrom -N -p -o flac
