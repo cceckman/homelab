@@ -4,6 +4,15 @@
   become: true
   ansible.builtin.group:
     name: storage-access
+- name: "Create storage-access user"
+  become: true
+  ansible.builtin.user:
+    name: storage-access
+    groups:
+      - storage-access
+    password: "!"
+    password_lock: true
+    shell: "/usr/bin/false"
 - name: "Install syncthing"
   ansible.builtin.include_tasks: syncthing.yaml
 - name: "Install backup support"

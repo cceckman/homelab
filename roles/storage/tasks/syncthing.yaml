@@ -1,0 +1,25 @@
+- name: "Install syncthing"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    update_cache: true
+    pkg:
+      - syncthing
+- name: "Add syncthing unit file"
+  become: true
+  ansible.builtin.copy:
+    src: "syncthing.service"
+    dest: /etc/systemd/system/syncthing.service
+    mode: 0644
+- name: "Enable syncthing unit"
+  become: true
+  ansible.builtin.systemd:
+    name: syncthing
+    daemon_reload: true
+    enabled: true
+    state: started
+- name: "Proxy GUI over HTTPS"
+  become: true
+  ansible.builtin.command:
+    cmd: "tailscale serve https:8384 / http://127.0.0.1:8384"
+

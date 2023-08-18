@@ -12,7 +12,7 @@ Restart=on-failure
 RestartSec=1
 SuccessExitStatus=3 4
 RestartForceExitStatus=3 4
-User=syncthing
+User=storage-access
 Group=storage-access
 
 # Hardening
