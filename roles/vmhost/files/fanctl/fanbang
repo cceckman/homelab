@@ -6,8 +6,8 @@
 # (which match what I observe.)
 
 
-# At startup, switch to the "full" fan control- briefly:
-ipmitool raw 0x30 0x45 1
+# At startup, switch to the "full" fan control- until we execute the loop below:
+ipmitool raw 0x30 0x45 0x1 0x1
 # And get hwmon for drives:
 modprobe drivetemp
 
