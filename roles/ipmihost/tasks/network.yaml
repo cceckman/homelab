@@ -3,9 +3,10 @@
   ansible.builtin.copy:
     dest: /etc/systemd/network/
     src: network/
-- name: "Restart networkd"
+- name: "Enable, restart networkd"
   become: true
   ansible.builtin.systemd:
     name: systemd-networkd
+    enabled: true
     state: restarted
 
