@@ -10,13 +10,6 @@
   vars:
     # We perform authentication after the fact, manually
     tailscale_up_skip: true
-- name: "Install Prometheus node_exporter"
-  hosts:
-    - storage
-    - rack18
-    - rack19
-  roles:
-    - prometheus.prometheus.node_exporter
 - name: "Configure ipmi host server"
   gather_facts: false
   hosts: rack18
@@ -30,6 +23,9 @@
 - name: "Configure storage server"
   gather_facts: false
   hosts: storage
+  vars:
+    prometheus_agent_mode: true
   roles:
     - storage
-
+- name: "Configure Prometheus"
+  include: prometheus.yaml

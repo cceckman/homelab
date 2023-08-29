@@ -1,0 +1,18 @@
+- name: "Install abcde"
+  ansible.builtin.apt:
+    pkgs:
+      - abcde
+- name: "Copy sources"
+  become: true
+  with_items:
+    - etc/systemd/system/autorip.service
+    - etc/abcde.conf
+  ansible.builtin.copy:
+    src: "autorip/{{ item }}"
+    dest: "/{{ item }}"
+    mode: 0644
+- name: "Reload daemon"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
