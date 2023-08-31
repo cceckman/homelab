@@ -52,6 +52,16 @@
         basic_auth:
           username: "{{ lookup('file', 'remote-user.vault') }}"
           password: "{{ lookup('file', 'remote-pass.vault') }}"
+    prometheus_scrape_configs:
+      - job_name: "prometheus"
+        metrics_path: "{{ prometheus_metrics_path }}"
+        static_configs:
+          - targets:
+            - "{{ ansible_fqdn | default(ansible_host) | default('localhost') }}:9090"
+      - job_name: "node_exporter"
+        file_sd_configs:
+          - files:
+            - "{{ prometheus_config_dir }}/file_sd/node_exporter.yml"
   roles:
     - prometheus.prometheus.prometheus
 
