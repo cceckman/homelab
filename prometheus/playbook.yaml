@@ -1,0 +1,57 @@
+---
+# name: "Install Prometheus node_exporter"
+# # Requires host facts
+# hosts:
+#   - storage
+#   - rack18
+#   - rack19
+# roles:
+#   - prometheus.prometheus.node_exporter
+- name: "Switch resolvers"
+  gather_facts: false
+  hosts:
+    - storage
+  tasks:
+    - name: "Install systemd network files"
+      become: true
+      ansible.builtin.copy:
+        src: 20-default.network
+        dest: /etc/systemd/network
+    - name: "Install systemd networking"
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - "systemd-resolved"
+    - name: "Enable systemd network components"
+      become: true
+      with_items:
+        - "systemd-resolved"
+        - "systemd-networkd"
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: restarted
+# Below is not perfectly reproducible; I ran these by hand
+# and rebooted to get the result I wanted (systemd managing everything.)
+    - name: "Uninstall non-systemd networking"
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - isc-dhcp-client
+          - ifupdown
+        state: absent
+- name: "Configure prometheus servers"
+  hosts: storage
+  vars:
+    prometheus_agent_mode: true
+    prometheus_static_targets_files:
+      - "{{ ansible_facts.hostname }}/*.yml"
+      - "{{ ansible_facts.hostname }}/*.yaml"
+    prometheus_remote_write:
+      - url: https://prometheus-us-central1.grafana.net/api/prom/push
+        basic_auth:
+          username: "{{ lookup('file', 'remote-user.vault') }}"
+          password: "{{ lookup('file', 'remote-pass.vault') }}"
+  roles:
+    - prometheus.prometheus.prometheus
+
