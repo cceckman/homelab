@@ -11,16 +11,16 @@ ipmitool raw 0x30 0x45 0x1 0x1
 # And get hwmon for drives:
 modprobe drivetemp
 
-# i350bb in particular runs hot, even with low fans.
 #
 # Bang-bang control:
 # - If any is over MAXTEMP, switch to high speed
 # - If all are under MINTEMP, switch to low speed
+# At 25% fast speed, i350bb gets down to 55..but not under. Boo.
 MAXTEMP=65
-MINTEMP=55
+MINTEMP=56
 
 # Upper fan limit, in percent
-FAST_PCT=25
+FAST_PCT=30
 # Lower fan limit, in percent
 SLOW_PCT=8
 

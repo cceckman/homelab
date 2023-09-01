@@ -28,4 +28,4 @@
   roles:
     - storage
 - name: "Configure Prometheus"
-  include: prometheus/playbook.yaml
+  import_playbook: prometheus/playbook.yaml
