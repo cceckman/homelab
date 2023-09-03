@@ -1,0 +1,34 @@
+# Based on the template at https://www.navidrome.org/docs/installation/linux/
+[Unit]
+Description=IPMI Prometheus exporter
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/opt/ipmi_exporter/ipmi_exporter
+WorkingDirectory=/opt/ipmi_exporter/
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+
+# We can't have PrivateDevices - needs to be able to access IPMI.
+# PrivateDevices=yes
+DevicePolicy=closed
+DeviceAllow=char-ipmidev
+
+ProtectSystem=strict
+ProtectHome=true
+

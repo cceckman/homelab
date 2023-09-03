@@ -1,12 +1,56 @@
 ---
-# name: "Install Prometheus node_exporter"
-# # Requires host facts
-# hosts:
-#   - storage
-#   - rack18
-#   - rack19
-# roles:
-#   - prometheus.prometheus.node_exporter
+- name: "Install Prometheus node_exporter"
+  # Requires host facts
+  hosts:
+    - storage
+    - rack18
+    - rack19
+  vars:
+    node_exporter_disabled_collectors:
+      - arp
+      - bcache
+      - bonding
+      - btrfs
+      - dmi
+      - fibrechannel
+      - filefd
+      - infiniband
+      - ipvs
+    node_exporter_enabled_collectors: []
+  roles:
+    - prometheus.prometheus.node_exporter
+- name: "Install Prometheus IMPI exporter"
+  hosts:
+    - rack19
+  vars:
+    ipmi_exporter_version: 1.6.1
+    ipmi_exporter_directory: /opt/ipmi_exporter
+  tasks:
+    - name: "Install FreeIPMI"
+      become: true
+      ansible.builtin.apt:
+        pkg: ["freeipmi", "freeipmi-tools"]
+    - name: "Create unarchive target"
+      ansible.builtin.file:
+        state: directory
+        path: "{{ ipmi_exporter_directory }}"
+    - name: "Download exporter"
+      ansible.builtin.unarchive:
+        dest: "{{ ipmi_exporter_directory }}"
+        remote_src: true
+        src: "https://github.com/prometheus-community/ipmi_exporter/releases/download/v{{ ipmi_exporter_version }}/ipmi_exporter-{{ ipmi_exporter_version }}.linux-amd64.tar.gz"
+        # Strip the "package version" portion of the path, so we get stable paths"
+        extra_opts: ["--transform", "s!^[^/]\\+/!!"]
+    - name: "Install unit definition"
+      ansible.builtin.copy:
+        src: "ipmi-exporter.service"
+        dest: "/etc/systemd/system"
+    - name: "Start unit"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: "ipmi-exporter"
+        enabled: true
+        state: restarted
 - name: "Switch resolvers"
   gather_facts: false
   hosts:
@@ -62,6 +106,10 @@
         file_sd_configs:
           - files:
             - "{{ prometheus_config_dir }}/file_sd/node_exporter.yml"
+      - job_name: "ipmi_exporter"
+        file_sd_configs:
+          - files:
+            - "{{ prometheus_config_dir }}/file_sd/ipmi_exporter.yml"
   roles:
     - prometheus.prometheus.prometheus
 
