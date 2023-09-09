@@ -8,6 +8,9 @@ ReverseProxyWhitelist="127.0.0.1/32"
 CoverArtPriority="embedded,external"
 EnableCoverAnimation=false
 
+[Scanner]
+Extractor="ffmpeg"
+
 [LastFM]
 Enabled=false
 
