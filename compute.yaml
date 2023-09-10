@@ -1,0 +1,7 @@
+---
+- name: "Configure compute node"
+  hosts:
+    - compute
+  roles:
+    - rhost
+

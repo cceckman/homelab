@@ -30,3 +30,5 @@
     - storage
 - name: "Configure Prometheus"
   import_playbook: prometheus/playbook.yaml
+- name: "Configure compute services"
+  import_playbook: compute.yaml
