@@ -5,6 +5,7 @@
     - storage
     - rack18
     - rack19
+    - compute
   vars:
     node_exporter_disabled_collectors:
       - arp

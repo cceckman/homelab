@@ -4,7 +4,8 @@
   gather_facts: true
   hosts:
     - storage
-    - ipmihost
+    - rack18
+    - compute
   roles:
     - artis3n.tailscale
   vars:
