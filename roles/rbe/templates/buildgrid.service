@@ -1,0 +1,38 @@
+# Based on the template at https://www.navidrome.org/docs/installation/linux/
+[Unit]
+Description=Buildgrid remote build executor
+After=network.target
+AssertPathExists={{ buildgrid_dir }}
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=buildgrid
+Group=buildgrid
+Type=simple
+ExecStart={{ buildgrid_dir }}/run.sh
+WorkingDirectory={{ buildgrid_dir }}
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+DevicePolicy=closed
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap
+ReadOnlyPaths={{ buildgrid_dir }}
+ReadWritePaths={{ buildgrid_state }}
+
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=true
+

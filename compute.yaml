@@ -4,4 +4,6 @@
     - compute
   roles:
     - rhost
+    - rbe
+
 

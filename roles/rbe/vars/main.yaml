@@ -1,0 +1,4 @@
+buildgrid_version: "0.0.58"
+buildgrid_dir: "/opt/buildgrid"
+buildgrid_port: "5049"
+buildgrid_state: "/var/lib/buildgrid"

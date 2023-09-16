@@ -1,0 +1,82 @@
+- name: "Install dependencies"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - python3
+      - python3-pip
+      - python3-venv
+      - libcurl4-openssl-dev
+      - libssl-dev
+- name: "Prepare buildgrid user"
+  become: true
+  ansible.builtin.group:
+    name: buildgrid
+- name: "Prepare buildgrid user"
+  become: true
+  ansible.builtin.user:
+    name: buildgrid
+    group: buildgrid
+    password: "!"
+    password_lock: true
+- name: "Create buildgrid directories"
+  become: true
+  with_items:
+    - "{{ buildgrid_dir }}"
+    - "{{ buildgrid_state }}"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: buildgrid
+    group: buildgrid
+- name: "Download buildgrid sources"
+  become: true
+  ansible.builtin.unarchive:
+    src: "https://gitlab.com/BuildGrid/buildgrid/-/archive/{{ buildgrid_version }}/buildgrid-{{ buildgrid_version }}.tar.gz"
+    remote_src: true
+    dest: "{{ buildgrid_dir }}"
+    owner: buildgrid
+    group: buildgrid
+    extra_opts: ["--strip-components=1"]
+- name: "Upload helper files"
+  become: true
+  with_items:
+    - install.sh
+    - run.sh
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ buildgrid_dir }}/{{ item }}"
+    owner: buildgrid
+    group: buildgrid
+    mode: "0544"
+- name: "Run install script"
+  become: true
+  # It would be nice to become_user: buildgrid here,
+  # but there's issues with becoming an unprivileged user.
+  ansible.builtin.command:
+    chdir: "{{ buildgrid_dir }}"
+    cmd: "sudo -u buildgrid -- ./install.sh"
+- name: "Install config"
+  become: true
+  ansible.builtin.template:
+    src: server.yml
+    dest: "/opt/buildgrid/server.yml"
+- name: "Install systemd unit"
+  become: true
+  ansible.builtin.template:
+    src: buildgrid.service
+    dest: "/etc/systemd/system/buildgrid.service"
+    owner: buildgrid
+    group: buildgrid
+    mode: "0444"
+- name: "Activate systemd unit"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: buildgrid
+    state: restarted
+    enabled: true
+- name: "Propagate tailscale"
+  become: true
+  ansible.builtin.command:
+    cmd: "tailscale serve tls-terminated-tcp:{{ buildgrid_port }} / tcp://localhost:{{ buildgrid_port }}"
+
