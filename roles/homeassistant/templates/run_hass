@@ -4,9 +4,11 @@ set -eux
 
 # Install stage:
 python3 -m venv .
-source bin/activate
+. bin/activate
 python3 -m pip install wheel
 
-pip3 install homeassistant=={{ homeassistant_version }}
+python3 -m pip install \
+  homeassistant=={{ homeassistant_version }} \
+  home-assistant-frontend=={{ homeassistant_fe_version }}
 
-hass
+exec hass

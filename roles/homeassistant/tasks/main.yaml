@@ -38,7 +38,7 @@
     groups:
      # Below groups are elided - I don't have anything like this directly
      # plugged in to the home-assistant device.
-     #- dialout
+      - dialout
      #- gpio
      #- i2c
       - homeassistant
@@ -72,4 +72,4 @@
     daemon_reload: true
     name: "homeassistant.service"
     enabled: true
-
+    state: "restarted"
