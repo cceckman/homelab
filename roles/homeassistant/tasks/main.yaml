@@ -1,0 +1,75 @@
+# Home assistant initialization atop a Debian base
+#
+# https://www.home-assistant.io/installation/raspberrypi#install-home-assistant-core
+#
+- name: "Install dependencies"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    pkg:
+      - autoconf
+      - bluez
+      - build-essential
+      - ffmpeg
+      - libatlas-base-dev
+      - libffi-dev
+      - libjpeg-dev
+      - liblapack-dev
+      - liblapack3
+      - libopenjp2-7
+      - libssl-dev
+      - libtiff6
+      - libturbojpeg0-dev
+      - python3
+      - python3-dev
+      - python3-pip
+      - python3-venv
+      - tzdata
+      - zlib1g-dev
+- name: "Prepare home-assistant group"
+  become: true
+  ansible.builtin.group:
+    name: homeassistant
+    system: true
+- name: "Prepare home-assistant user"
+  become: true
+  ansible.builtin.user:
+    name: homeassistant
+    groups:
+     # Below groups are elided - I don't have anything like this directly
+     # plugged in to the home-assistant device.
+     #- dialout
+     #- gpio
+     #- i2c
+      - homeassistant
+    system: true
+    password: "!"
+    password_lock: true
+- name: "Prepare home-assistant serving directory"
+  become: true
+  ansible.builtin.file:
+    path: "{{ homeassistant_serving }}"
+    state: directory
+    owner: homeassistant
+    group: homeassistant
+    mode: '0744'
+- name: "Copy files"
+  become: true
+  ansible.builtin.template:
+    mode: '0544'
+    dest: "{{ homeassistant_serving }}/run_hass"
+    src: "{{ item }}"
+    owner: homeassistant
+    group: homeassistant
+- name: "Add unit file"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/system
+    src: homeassistant.service
+- name: "Enable units"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "homeassistant.service"
+    enabled: true
+

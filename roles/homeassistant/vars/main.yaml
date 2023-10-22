@@ -1,0 +1,2 @@
+homeassistant_serving: "/srv/homeassistant"
+homeassistant_version: "2023.10.5"
