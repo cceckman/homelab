@@ -18,7 +18,7 @@
       - liblapack3
       - libopenjp2-7
       - libssl-dev
-      - libtiff6
+     #- libtiff6 # not available on rpi?
       - libturbojpeg0-dev
       - python3
       - python3-dev
@@ -58,12 +58,12 @@
   ansible.builtin.template:
     mode: '0544'
     dest: "{{ homeassistant_serving }}/run_hass"
-    src: "{{ item }}"
+    src: "run_hass"
     owner: homeassistant
     group: homeassistant
 - name: "Add unit file"
   become: true
-  ansible.builtin.copy:
+  ansible.builtin.template:
     dest: /etc/systemd/system
     src: homeassistant.service
 - name: "Enable units"
