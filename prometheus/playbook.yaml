@@ -3,7 +3,6 @@
   # Requires host facts
   hosts:
     - storage
-    - rack18
     - rack19
     - compute
   vars:

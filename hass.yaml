@@ -1,6 +1,0 @@
----
-- name: "Install and start homeassistant"
-  hosts:
-    - rack18
-  roles:
-    - homeassistant

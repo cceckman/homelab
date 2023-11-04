@@ -1,7 +1,0 @@
-[NetDev]
-Name=eth0.30
-Kind=vlan
-
-[VLAN]
-Id=30
-

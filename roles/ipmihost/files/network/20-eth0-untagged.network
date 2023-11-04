@@ -1,9 +1,0 @@
-[Match]
-Name=eth0
-
-[Network]
-Description=Base Ethernet device
-VLAN=eth0.20
-VLAN=eth0.30
-
-DHCP=true

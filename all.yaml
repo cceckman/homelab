@@ -4,18 +4,12 @@
   gather_facts: true
   hosts:
     - storage
-    - rack18
     - compute
   roles:
     - artis3n.tailscale
   vars:
     # We perform authentication after the fact, manually
     tailscale_up_skip: true
-- name: "Configure ipmi host server"
-  gather_facts: false
-  hosts: rack18
-  roles:
-    - ipmihost
 - name: "Configure vm server"
   gather_facts: false
   hosts: rack19
@@ -32,5 +26,4 @@
   import_playbook: prometheus/playbook.yaml
 - name: "Configure compute services"
   import_playbook: compute.yaml
-- name: "Configure home assistant"
-  import_playbook: hass.yaml
+
