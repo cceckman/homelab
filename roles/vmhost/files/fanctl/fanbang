@@ -17,10 +17,10 @@ modprobe drivetemp
 # - If all are under MINTEMP, switch to low speed
 # At 25% fast speed, i350bb gets down to 55..but not under. Boo.
 MAXTEMP=65
-MINTEMP=56
+MINTEMP=57
 
 # Upper fan limit, in percent
-FAST_PCT=30
+FAST_PCT=50
 # Lower fan limit, in percent
 SLOW_PCT=8
 
