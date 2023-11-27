@@ -41,9 +41,7 @@ build_tailscale() {
       https://github.com/tailscale/tailscale.git "$TSPATH"
   fi
 
-  cd "$TSPATH"
-  git fetch --tags --update-shallow origin "$VERSION"
-  git checkout "$VERSION"
+  ( cd "$TSPATH" ; git fetch --tags; git checkout "$VERSION" )
 
 
   # We're building for a small device. We aren't trying to squeeze onto the root
