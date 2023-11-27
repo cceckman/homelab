@@ -22,7 +22,8 @@
     prometheus_agent_mode: true
   roles:
     - storage
-    - backup
+    - role: backup
+      tags: backup
 - name: "Configure Prometheus"
   import_playbook: prometheus/playbook.yaml
 - name: "Configure compute services"

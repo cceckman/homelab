@@ -1,0 +1,3 @@
+rest_server_version: "0.12.1"
+rest_server_directory: "/mnt/bigdata/serving/restic"
+rest_server_staging: "/opt/rest-server"
