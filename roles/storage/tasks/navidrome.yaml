@@ -65,5 +65,5 @@
 - name: "Propagate tailscale"
   become: true
   ansible.builtin.command:
-    cmd: "tailscale serve https:4533 / http://127.0.0.1:4533"
+    cmd: "tailscale serve --bg --https 4533 http://127.0.0.1:4533"
 
