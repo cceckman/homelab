@@ -15,14 +15,10 @@
     shell: "/usr/bin/false"
 - name: "Install syncthing"
   ansible.builtin.include_tasks: syncthing.yaml
-- name: "Install backup support"
-  ansible.builtin.include_tasks: backup.yaml
 - name: "Install network filesystem servers"
   ansible.builtin.include_tasks: servers.yaml
 - name: "Install navidrome"
   ansible.builtin.include_tasks: navidrome.yaml
 - name: "Install syncthing"
   ansible.builtin.include_tasks: syncthing.yaml
-
-
 
