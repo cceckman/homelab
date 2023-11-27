@@ -18,4 +18,5 @@
     - vars.yaml
   hosts:
     - "{{ rm2_backup_server }}"
-  tasks: [] # TODO
+  tasks: []
+
