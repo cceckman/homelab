@@ -16,4 +16,5 @@ all:
       ansible_host: rack12
       ansible_user: cceckman
       ansible_ssh_private_key_file: ~/.ssh/id_pis
+    remarkable: {} # No Python, has to be reached via script
 

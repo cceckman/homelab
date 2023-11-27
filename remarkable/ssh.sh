@@ -32,11 +32,5 @@ fi
 <"$KEYFILE" ssh 'remarkable' sh -c 'umask 077 && mkdir -p .ssh && cat - >.ssh/authorized_keys'
 # ssh-copy-id -i "$KEYFILE" remarkable
 
-ME="$(realpath "$0")"
-TSINSTALL="$(dirname "$ME")/rm2-tailscale.sh"
-
-"$TSINSTALL" remarkable
-
-# TODO: Add the bits for restic setup
 echo >&2 "All done!"
 

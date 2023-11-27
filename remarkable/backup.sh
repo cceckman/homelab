@@ -57,7 +57,7 @@ build_restic() {
   then
     echo >&2 "Downloading restic source..."
     mkdir -p "$(dirname "$RESTICPATH")"
-    git clone 1 https://github.com/restic/restic.git "$RESTICPATH"
+    git clone --depth 1 https://github.com/restic/restic.git "$RESTICPATH"
   fi
   (cd "$RESTICPATH" ; git fetch --tags; git checkout "$RESTICVERSION")
 

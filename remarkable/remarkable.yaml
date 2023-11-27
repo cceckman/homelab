@@ -1,0 +1,21 @@
+---
+- name: "Configure reMarkable 2 tablet"
+  hosts:
+    - remarkable
+  vars_files:
+    - vars.yaml
+  gather_facts: false
+  tasks:
+    - name: "Bootstrap SSH"
+      local_action: ansible.builtin.command ./ssh.sh {{ inventory_hostname }}
+    - name: "Install/update Tailscale"
+      local_action: ansible.builtin.command ./tailscale.sh {{ inventory_hostname }}
+    - name: "Install/update restic"
+      local_action: ansible.builtin.command ./backup.sh {{ inventory_hostname }} {{ rm2_backup_server }}.{{ rm2_tailscale_domain }} {{ rm2_password }} {{ rm2_user }}
+
+- name: "Configure backup server"
+  vars_files:
+    - vars.yaml
+  hosts:
+    - "{{ rm2_backup_server }}"
+  tasks: [] # TODO
