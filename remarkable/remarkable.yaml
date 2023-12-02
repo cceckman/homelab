@@ -10,13 +10,6 @@
       local_action: ansible.builtin.command ./ssh.sh {{ inventory_hostname }}
     - name: "Install/update Tailscale"
       local_action: ansible.builtin.command ./tailscale.sh {{ inventory_hostname }}
-    - name: "Install/update restic"
-      local_action: ansible.builtin.command ./backup.sh {{ inventory_hostname }} {{ rm2_backup_server }}.{{ rm2_tailscale_domain }} {{ rm2_password }} {{ rm2_user }}
-
-- name: "Configure backup server"
-  vars_files:
-    - vars.yaml
-  hosts:
-    - "{{ rm2_backup_server }}"
-  tasks: []
+    - name: "Install/update syncthing"
+      local_action: ansible.builtin.command ./syncthing.sh {{ inventory_hostname }}
 
