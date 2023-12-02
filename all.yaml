@@ -10,6 +10,12 @@
   vars:
     # We perform authentication after the fact, manually
     tailscale_up_skip: true
+- name: "Configure UPS response"
+  gather_facts: false
+  hosts:
+    - rack19
+  roles:
+    - upsclient
 - name: "Configure vm server"
   gather_facts: false
   hosts: rack19
@@ -22,8 +28,7 @@
     prometheus_agent_mode: true
   roles:
     - storage
-    - role: backup
-      tags: backup
+    - backup
 - name: "Configure Prometheus"
   import_playbook: prometheus/playbook.yaml
 - name: "Configure compute services"

@@ -1,0 +1,64 @@
+- name: "Remove apcupsd"
+  become: true
+  ansible.builtin.apt:
+    state: absent
+    pkg:
+      - apcupsd
+- name: "Clear apcupsd configuration"
+  become: true
+  ansible.builtin.file:
+    path: /etc/apcupsd/apcupsd.conf
+    state: absent
+- name: "Create upsmon group"
+  become: true
+  ansible.builtin.group:
+    name: upsmon
+- name: "Create upsmon user"
+  become: true
+  ansible.builtin.user:
+    name: upsmon
+    groups:
+      - upsmon
+    password: "!"
+    password_lock: true
+    shell: "/usr/bin/false"
+- name: "Install Network UPS Tools"
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - nut
+- name: "Disable upsd server"
+  become: true
+  ansible.builtin.systemd:
+    state: "stopped"
+    name: "nut-server"
+    enabled: false
+- name: "Create upsmon dropin directory"
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/nut-monitor.service.d/
+    state: "directory"
+- name: "Configure upsmon service"
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/nut-monitor.service.d/monitor-service.conf
+    src: files/monitor-service.conf
+- name: "Configure upsmon"
+  become: true
+  loop:
+    - upsmon.conf
+    - nut.conf
+  ansible.builtin.template:
+    dest: "/etc/nut/{{ item }}"
+    src: "{{ item }}"
+    owner: upsmon
+    group: upsmon
+    mode: "0400"
+- name: "Relaunch upsmon"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    state: "reloaded"
+    name: "nut-monitor"
+    enabled: true
+

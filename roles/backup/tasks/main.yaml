@@ -4,18 +4,6 @@
     cache_valid_time: 3600
     pkg:
       - restic
-  # restic-rest-server is not packaged by Debian:
-  # https://mentors.debian.net/package/restic-rest-server/
-- name: "Install restic rest-server"
-  become: true
-  ansible.builtin.unarchive:
-    remote_src: true
-    src: "https://github.com/restic/rest-server/releases/download/v{{ rest_server_version }}/rest-server_{{ rest_server_version }}_linux_amd64.tar.gz"
-    include: "rest-server"
-    extra_opts:
-      - "--strip-components=1"
-      - "--no-overwrite-dir"
-    dest: "/usr/bin"
 - name: "Prepare restic user"
   become: true
   ansible.builtin.user:
