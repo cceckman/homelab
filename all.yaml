@@ -1,4 +1,7 @@
 ---
+- name: "Install fallback key"
+  hosts: all
+  roles: [login]
 - name: "Install Tailscale"
   # Playbook requires facts to collect the distribution:
   gather_facts: true

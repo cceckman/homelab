@@ -1,0 +1,7 @@
+- name: "Install fallback key"
+  become: true
+  ansible.posix.authorized_key:
+    comment: "fallback"
+    key: "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBEWOv6ObxM/LQTQXMJYKDrk/yzpog0CvhXWCCFu/3SddnYujiLDTDvPKM+7LmPRWTvaWDvWyaG1mvIL17aBlO8="
+    user: "{{ ansible_user }}"
+

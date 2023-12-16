@@ -27,10 +27,13 @@ then
     -f "$(dirname $KEYFILE)/$(basename -s.pub $KEYFILE)" \
     -C "$(hostname)-to-remarkable"
 fi
-# Install key:
+# Install key, and fallback key:
 # For whatever reason, ssh-copy-id doesn't want to work.
-<"$KEYFILE" ssh 'remarkable' sh -c 'umask 077 && mkdir -p .ssh && cat - >.ssh/authorized_keys'
+cat "$KEYFILE" - <<EOF | ssh 'remarkable' sh -c 'umask 077 && mkdir -p .ssh && cat - >.ssh/authorized_keys'
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBEWOv6ObxM/LQTQXMJYKDrk/yzpog0CvhXWCCFu/3SddnYujiLDTDvPKM+7LmPRWTvaWDvWyaG1mvIL17aBlO8= fallback
+EOF
 # ssh-copy-id -i "$KEYFILE" remarkable
+
 
 echo >&2 "All done!"
 
