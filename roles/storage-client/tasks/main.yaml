@@ -1,0 +1,45 @@
+- name: "Install Samba support"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    update_cache: true
+    pkg:
+      - samba
+      - cifs-utils
+- name: "Add config directory"
+  become: true
+  ansible.builtin.file:
+    state: "directory"
+    path: /etc/samba/
+- name: "Add credentials file"
+  become: true
+  ansible.builtin.copy:
+    src: "smbcreds"
+    dest: /etc/samba/smbcreds
+    mode: 0600
+- name: "Add mountpoints"
+  become: true
+  with_items:
+    - /mnt/bigdata/perpetual
+  ansible.builtin.file:
+    state: "directory"
+    path: "{{ item }}"
+- name: "Add mount units"
+  become: true
+  with_items:
+    - mnt-bigdata-perpetual.mount
+    - mnt-bigdata-perpetual.automount
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+- name: "Reload daemon"
+  become: true
+  with_items:
+    - mnt-bigdata-perpetual.automount
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    daemon_reload: true
+    enabled: true
+    state: "started"
+
+

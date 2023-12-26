@@ -1,0 +1,9 @@
+[Unit]
+Description=samba automount for bigdata/perpetual
+
+[Automount]
+Where=/mnt/bigdata/perpetual
+TimeoutIdleSec=0
+
+[Install]
+WantedBy=multi-user.target

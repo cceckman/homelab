@@ -2,6 +2,11 @@
 - name: "Install fallback key"
   hosts: all
   roles: [login]
+- name: "Install Samba client config"
+  hosts:
+    - localhost
+  roles:
+    - storage-client
 - name: "Install Tailscale"
   # Playbook requires facts to collect the distribution:
   gather_facts: true
@@ -38,3 +43,10 @@
   import_playbook: compute.yaml
 - name: "Configure reMarkable and relations"
   import_playbook: remarkable/remarkable.yaml
+- name: "Install Samba client config"
+  hosts:
+    - localhost
+  roles:
+    - storage-client
+
+
