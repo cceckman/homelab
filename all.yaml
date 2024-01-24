@@ -5,6 +5,7 @@
 - name: "Install Samba client config"
   hosts:
     - localhost
+    - compute
   roles:
     - storage-client
 - name: "Install Tailscale"

@@ -21,6 +21,7 @@
   become: true
   with_items:
     - /mnt/bigdata/perpetual
+    - /mnt/bigdata/serving
   ansible.builtin.file:
     state: "directory"
     path: "{{ item }}"
@@ -29,13 +30,16 @@
   with_items:
     - mnt-bigdata-perpetual.mount
     - mnt-bigdata-perpetual.automount
+    - mnt-bigdata-serving.mount
+    - mnt-bigdata-serving.automount
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/etc/systemd/system/{{ item }}"
-- name: "Reload daemon"
+- name: "Reload daemon and start units"
   become: true
   with_items:
     - mnt-bigdata-perpetual.automount
+    - mnt-bigdata-serving.automount
   ansible.builtin.systemd:
     name: "{{ item }}"
     daemon_reload: true

@@ -1,5 +1,8 @@
 all:
   hosts:
+    localhost:
+      ansible_connection: local
+      ansible_user: cceckman
     rack19:
       ansible_host: rack19
       ansible_user: root
