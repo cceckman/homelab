@@ -9,19 +9,6 @@
   ansible.builtin.file:
     path: /etc/apcupsd/apcupsd.conf
     state: absent
-- name: "Create upsmon group"
-  become: true
-  ansible.builtin.group:
-    name: upsmon
-- name: "Create upsmon user"
-  become: true
-  ansible.builtin.user:
-    name: upsmon
-    groups:
-      - upsmon
-    password: "!"
-    password_lock: true
-    shell: "/usr/bin/false"
 - name: "Install Network UPS Tools"
   become: true
   ansible.builtin.apt:
@@ -33,17 +20,17 @@
     state: "stopped"
     name: "nut-server"
     enabled: false
-- name: "Create upsmon dropin directory"
+- name: "Create nut-monitor dropin directory"
   become: true
   ansible.builtin.file:
     path: /etc/systemd/system/nut-monitor.service.d/
     state: "directory"
-- name: "Configure upsmon service"
+- name: "Configure nut-monitor service"
   become: true
   ansible.builtin.copy:
     dest: /etc/systemd/system/nut-monitor.service.d/monitor-service.conf
     src: files/monitor-service.conf
-- name: "Configure upsmon"
+- name: "Configure nut-monitor"
   become: true
   loop:
     - upsmon.conf
@@ -51,10 +38,10 @@
   ansible.builtin.template:
     dest: "/etc/nut/{{ item }}"
     src: "{{ item }}"
-    owner: upsmon
-    group: upsmon
+    owner: nut
+    group: nut
     mode: "0400"
-- name: "Relaunch upsmon"
+- name: "Relaunch nut-monitor"
   become: true
   ansible.builtin.systemd:
     daemon_reload: true

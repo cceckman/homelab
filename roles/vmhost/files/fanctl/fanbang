@@ -17,12 +17,12 @@ modprobe drivetemp
 # - If all are under MINTEMP, switch to low speed
 # At 25% fast speed, i350bb gets down to 55..but not under. Boo.
 MAXTEMP=65
-MINTEMP=57
+MINTEMP=60
 
 # Upper fan limit, in percent
-FAST_PCT=50
+FAST_PCT=15
 # Lower fan limit, in percent
-SLOW_PCT=8
+SLOW_PCT=10
 
 # Convert from percentage to byte
 UPPER="$(( FAST_PCT * 255 / 100 ))"
@@ -42,9 +42,14 @@ sample() {
   | while read INPUT
   do
     NUM="$(basename $INPUT | grep -o '[0-9]')"
-    cat \
-      "$(dirname $INPUT)/name" \
-     | tr '\r\n' ' ' >>"$SAMPLES"
+    NAMEFILE="$(dirname $INPUT)/name"
+    # Ignore the one part that runs like 5C over everything else-
+    # the network chip?
+    if grep -q 'i350bb' "$NAMEFILE"
+    then
+      continue
+    fi
+    cat "$NAMEFILE" | tr '\r\n' ' ' >>"$SAMPLES"
     LABEL="$(dirname $INPUT)/temp${NUM}_label"
     if test -f "$LABEL"
     then
