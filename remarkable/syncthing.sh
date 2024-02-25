@@ -19,7 +19,7 @@ fi
 
 TARGET="$1"
 INSTALLPATH="~/syncthing"
-VERSION="v1.26.1"
+VERSION="v1.27.3"
 
 CONTENT="$(mktemp -d)/"
 build_bin() {
@@ -109,10 +109,10 @@ EOF
 chmod +x "$CONTENT/setup.sh"
 
 echo >&2 "Connecting and uploading..."
-ssh -o ConnectTimeout=5 "$TARGET" \
+ssh -o ConnectTimeout=5 root@"$TARGET" \
   "echo >&2 'Connected to reMarkable!'; rm -rf $INSTALLPATH; mkdir -p $INSTALLPATH" >&2
 rsync -avz "$CONTENT" "$TARGET:$INSTALLPATH"
 
 echo >&2 "Running setup script..."
-ssh "$TARGET" "$INSTALLPATH/setup.sh"
+ssh root@"$TARGET" "$INSTALLPATH/setup.sh"
 

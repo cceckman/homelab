@@ -1,6 +1,7 @@
 ---
 - name: "Install fallback key"
   hosts: all
+  gather_facts: false
   roles: [login]
 - name: "Install Samba client config"
   hosts:

@@ -24,7 +24,7 @@ fi
 
 TARGET="$1"
 TSINSTALLPATH="~/tailscale"
-VERSION="v1.54.0"
+VERSION="v1.60.0"
 
 CONTENT="$(mktemp -d)/"
 build_tailscale() {
@@ -41,7 +41,7 @@ build_tailscale() {
       https://github.com/tailscale/tailscale.git "$TSPATH"
   fi
 
-  ( cd "$TSPATH" ; git fetch --tags; git checkout "$VERSION" )
+  ( cd "$TSPATH" ; git fetch --depth=1 --tags; git checkout "$VERSION" )
 
 
   # We're building for a small device. We aren't trying to squeeze onto the root
@@ -109,12 +109,12 @@ EOF
 chmod +x "$CONTENT/setup.sh"
 
 echo >&2 "Connecting and uploading..."
-ssh -o ConnectTimeout=5 "$TARGET" \
+ssh -o ConnectTimeout=5 root@"$TARGET" \
   "echo >&2 'Connected to reMarkable!'; rm -rf $TSINSTALLPATH; mkdir -p $TSINSTALLPATH" >&2
 rsync -avz "$CONTENT" "$TARGET:$TSINSTALLPATH"
 
 echo >&2 "Running setup script..."
 # Execute under systemd-run, so even if our network connection hangs up due to
 # Tailscale disruption, it'll pick up again when we're done.
-ssh "$TARGET" "systemd-run $TSINSTALLPATH/setup.sh"
+ssh root@"$TARGET" "systemd-run $TSINSTALLPATH/setup.sh"
 
