@@ -46,7 +46,7 @@
     src: "navidrome/{{ item }}"
     dest: "/{{ item }}"
     mode: 0644
-    user: navidrome
+    owner: navidrome
 - name: "Install navidrome unit"
   become: true
   with_items:
