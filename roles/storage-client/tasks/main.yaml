@@ -1,3 +1,13 @@
+- name: "Create storage-access group"
+  become: true
+  ansible.builtin.group:
+    name: "storage-access"
+- name: "Put cceckman in storage-access"
+  become: true
+  ansible.builtin.user:
+    name: "cceckman"
+    groups: ["storage-access"]
+    append: yes
 - name: "Install Samba support"
   become: true
   ansible.builtin.apt:
@@ -45,5 +55,4 @@
     daemon_reload: true
     enabled: true
     state: "started"
-
 

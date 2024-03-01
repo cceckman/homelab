@@ -1,12 +1,12 @@
 [Unit]
-Description=samba mount for bigdata/perpetual
+Description=samba mount for bigdata/serving
 Requires=systemd-networkd.service
 After=network-online.target
 Wants=network-online.target
 
 [Mount]
-What=//storage.monkey-heptatonic.ts.net/bigdata_perpetual
-Where=/mnt/bigdata/perpetual
+What=//storage.monkey-heptatonic.ts.net/bigdata_serving
+Where=/mnt/bigdata/serving
 Options=vers=2.1,credentials=/etc/samba/smbcreds,iocharset=utf8,rw,x-systemd.automount,uid=root,gid=storage-access
 Type=cifs
 TimeoutSec=30
