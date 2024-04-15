@@ -24,7 +24,7 @@ fi
 
 TARGET="$1"
 TSINSTALLPATH="~/tailscale"
-VERSION="v1.60.0"
+VERSION="v1.64.0"
 
 CONTENT="$(mktemp -d)/"
 build_tailscale() {

@@ -19,7 +19,7 @@ fi
 
 TARGET="$1"
 INSTALLPATH="~/syncthing"
-VERSION="v1.27.3"
+VERSION="v1.27.6"
 
 CONTENT="$(mktemp -d)/"
 build_bin() {
