@@ -17,4 +17,8 @@
   ansible.builtin.systemd:
     name: smbd
     state: restarted
+- name: "Install miniflux"
+  become: true
+  ansible.builtin.apt:
+    deb: https://github.com/miniflux/v2/releases/download/2.1.3/miniflux_2.1.3_amd64.deb
 
