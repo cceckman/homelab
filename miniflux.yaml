@@ -1,0 +1,6 @@
+---
+- name: "Install miniflux"
+  hosts: [storage]
+  roles: [miniflux]
+  gather_facts: false
+

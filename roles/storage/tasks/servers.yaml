@@ -17,6 +17,8 @@
   ansible.builtin.systemd:
     name: smbd
     state: restarted
+# TODO: Set up postgres, user, DB for miniflux.
+# Or fork it to a sqlite version. >.>
 - name: "Install miniflux"
   become: true
   ansible.builtin.apt:
