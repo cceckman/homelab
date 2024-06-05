@@ -1,5 +1,6 @@
 MusicFolder="/mnt/bigdata/perpetual/Music/AllMusic"
-Port="4533"
+# We run on :4532 so Tailscale can claim the stanard :4533
+Port="4532"
 Address="[::]"
 
 ReverseProxyUserHeader="Tailscale-User-Login"
