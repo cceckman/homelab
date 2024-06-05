@@ -16,7 +16,9 @@ ExecStart=/opt/navidrome/navidrome --configfile "/var/lib/navidrome/navidrome.to
 WorkingDirectory=/var/lib/navidrome
 TimeoutStopSec=20
 KillMode=process
-Restart=on-failure
+# Failure-to-bind still exits 0, so "always" try to keep running.
+Restart=always
+RestartSec=1s
 
 # See https://www.freedesktop.org/software/systemd/man/systemd.exec.html
 DevicePolicy=closed
