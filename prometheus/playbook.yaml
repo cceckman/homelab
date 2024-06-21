@@ -24,6 +24,18 @@
   # Requires host facts?
   hosts:
     - prober
+  vars:
+    blackbox_exporter_configuration_modules:
+      http_2xx_ipv6:
+        prober: http
+        http:
+          preferred_ip_protocol: ipv6
+          ip_protocol_fallback: false
+      http_2xx_ipv4:
+        prober: http
+        http:
+          preferred_ip_protocol: ipv4
+          ip_protocol_fallback: false
   roles:
     - prometheus.prometheus.blackbox_exporter
 - name: "Install Prometheus IMPI exporter"
@@ -128,7 +140,7 @@
       - job_name: "blackbox"
         metrics_path: /probe
         params:
-          module: [http_2xx]  # Look for a HTTP 200 response.
+          module: [http_2xx_ipv4, http_2xx_ipv6]  # Look for a HTTP 200 response
         file_sd_configs:
           - files:
             - "{{ prometheus_config_dir }}/file_sd/blackbox.yml"
