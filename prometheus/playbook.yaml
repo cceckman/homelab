@@ -3,6 +3,7 @@
   # Requires host facts
   hosts:
     - storage
+    - prober
     - rack19
     - compute
   vars:
@@ -19,6 +20,12 @@
     node_exporter_enabled_collectors: []
   roles:
     - prometheus.prometheus.node_exporter
+- name: "Install Prometheus blackbox_exporter"
+  # Requires host facts?
+  hosts:
+    - prober
+  roles:
+    - prometheus.prometheus.blackbox_exporter
 - name: "Install Prometheus IMPI exporter"
   hosts:
     - rack19
@@ -54,7 +61,7 @@
 - name: "Switch resolvers"
   gather_facts: false
   hosts:
-    - storage
+    - prober
   tasks:
     - name: "Install systemd network files"
       become: true
@@ -85,12 +92,17 @@
           - ifupdown
         state: absent
 - name: "Configure prometheus servers"
-  hosts: storage
+  hosts: prober
+  no_log: false
   vars:
     prometheus_agent_mode: true
     prometheus_static_targets_files:
-      - "{{ ansible_facts.hostname }}/*.yml"
-      - "{{ ansible_facts.hostname }}/*.yaml"
+      - "{{ ansible_facts.hostname }}/targets/*.yml"
+      - "{{ ansible_facts.hostname }}/targets/*.yaml"
+    # This is a brand-new feature, not yet in the released version
+    # of the role. Booo!
+#   prometheus_scrape_config_files:
+#     - "{{ ansible_facts.hostname }}/scrapes/*.yaml"
     prometheus_remote_write:
       - url: https://prometheus-us-central1.grafana.net/api/prom/push
         basic_auth:
@@ -110,6 +122,23 @@
         file_sd_configs:
           - files:
             - "{{ prometheus_config_dir }}/file_sd/ipmi_exporter.yml"
+      - job_name: "blackbox_exporter"
+        static_configs:
+          - targets: ["127.0.0.1:9115"]
+      - job_name: "blackbox"
+        metrics_path: /probe
+        params:
+          module: [http_2xx]  # Look for a HTTP 200 response.
+        file_sd_configs:
+          - files:
+            - "{{ prometheus_config_dir }}/file_sd/blackbox.yml"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
   roles:
     - prometheus.prometheus.prometheus
 
