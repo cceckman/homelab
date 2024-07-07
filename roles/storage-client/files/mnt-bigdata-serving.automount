@@ -3,7 +3,7 @@ Description=samba automount for bigdata/serving
 
 [Automount]
 Where=/mnt/bigdata/serving
-TimeoutIdleSec=0
+TimeoutIdleSec=5m
 
 [Install]
 WantedBy=multi-user.target

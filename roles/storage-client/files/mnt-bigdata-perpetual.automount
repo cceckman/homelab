@@ -3,7 +3,7 @@ Description=samba automount for bigdata/perpetual
 
 [Automount]
 Where=/mnt/bigdata/perpetual
-TimeoutIdleSec=0
+TimeoutIdleSec=5m
 
 [Install]
 WantedBy=multi-user.target
