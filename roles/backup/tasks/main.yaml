@@ -30,6 +30,12 @@
     dest: "{{ restic_user.home }}/{{ item }}"
     src: "restic-secrets/{{ item }}.vault"
     owner: restic
+- name: "Add wrapper script"
+  become: true
+  ansible.builtin.copy:
+    dest: /usr/bin/backup-and-prune.sh
+    src: scripts/backup-and-prune.sh
+    mode: 0755
 - name: "Add unit files"
   become: true
   with_items:

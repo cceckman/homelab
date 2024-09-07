@@ -9,7 +9,7 @@ After=mnt-bigdata-perpetual.mount
 [Service]
 Type=oneshot
 User=restic
-ExecStart=/usr/bin/restic backup /mnt/bigdata/perpetual
+ExecStart=/usr/bin/backup-and-prune.sh
 EnvironmentFile=/home/restic/config.env
 
 # Bypass ownership checks - "read / list everything"
