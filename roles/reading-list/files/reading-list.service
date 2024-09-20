@@ -1,0 +1,37 @@
+# Based on the template at https://www.navidrome.org/docs/installation/linux/
+[Unit]
+Description=Reading Roundup server
+
+[Service]
+DynamicUser=yes
+User=reading-list
+Group=reading-list
+SupplementaryGroups=storage-access
+Type=simple
+ExecStart=/opt/reading-list/server --db "/mnt/bigdata/perpetual/Documents/Misc Notes/Obsidian/readdb/readdb.sqlite" --journal "/mnt/bigdata/perpetual/Documents/Misc Notes/Obsidian/Journal"
+TimeoutStopSec=20
+KillMode=process
+# Failure-to-bind still exits 0, so "always" try to keep running.
+Restart=always
+RestartSec=1s
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+DevicePolicy=closed
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap
+ReadWritePaths="/mnt/bigdata/perpetual/Documents/Misc Notes/Obsidian/readdb/"
+ReadOnlyPaths="/mnt/bigdata/perpetual/Documents/Misc Notes/Obsidian/Journal/" "/opt/reading-list"
+
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=true
+
+# Environment=RUST_LOG=debug RUST_BACKTRACE=1

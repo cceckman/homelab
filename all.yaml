@@ -39,6 +39,12 @@
   roles:
     - storage
     - backup
+- name: "Install misc storage services"
+  hosts: [storage]
+  roles: 
+    - miniflux
+    - reading-list
+  gather_facts: false
 - name: "Configure Prometheus"
   import_playbook: prometheus/playbook.yaml
 - name: "Configure compute services"
@@ -50,8 +56,4 @@
     - localhost
   roles:
     - storage-client
-- name: "Install miniflux"
-  hosts: [storage]
-  roles: [miniflux]
-  gather_facts: false
 

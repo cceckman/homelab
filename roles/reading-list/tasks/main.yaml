@@ -1,0 +1,40 @@
+- name: "Prepare bin directory"
+  become: true
+  ansible.builtin.file:
+    path: /opt/reading-list/
+    state: directory
+- name: "Download server"
+  become: true
+  ansible.builtin.get_url:
+    url: "https://github.com/cceckman/reading-roundup/releases/download/v0.1.1/server-x86_64-unknown-linux-gnu.tar.gz"
+    dest: /opt/reading-list-server.tar.gz
+    checksum: sha256:f8f26992cbae94165a861f578782f490a8d0c4313fc519db309063936357909d
+- name: "Extract server"
+  become: true
+  ansible.builtin.unarchive:
+    extra_opts: ['--strip-components=1']
+    remote_src: true
+    src: /opt/reading-list-server.tar.gz
+    dest: /opt/reading-list
+- name: "Add unit files"
+  become: true
+  with_items:
+    - reading-list.service
+    - reading-list.socket
+  ansible.builtin.copy:
+    dest: /etc/systemd/system
+    src: "{{ item }}"
+- name: "Enable socket"
+  become: true
+  with_items:
+    - reading-list.socket
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: "{{ item }}"
+    enabled: true
+    state: "started"
+- name: "Propagate tailscale"
+  become: true
+  ansible.builtin.command:
+    cmd: "tailscale serve --bg --https 7434 http://127.0.0.1:7434"
+

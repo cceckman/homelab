@@ -19,7 +19,7 @@ fi
 
 TARGET="$1"
 INSTALLPATH="~/syncthing"
-VERSION="v1.27.6"
+VERSION="v1.27.12"
 
 CONTENT="$(mktemp -d)/"
 build_bin() {
@@ -91,7 +91,6 @@ set -x
 # the INSTALLPATH won't get clobbered.
 ln -sf \$INSTALLPATH/syncthing /usr/bin/syncthing
 ln -sf \$INSTALLPATH/syncthing@.service /etc/systemd/system/syncthing@.service
-ln -sf \$INSTALLPATH/syncthing-resume.service /etc/systemd/system/syncthing-resume.service
 set +x
 
 echo >&2 "Reloading systemd..."
@@ -99,9 +98,9 @@ systemctl daemon-reload
 
 echo >&2 "Starting syncthing..."
 systemctl enable syncthing@root
-systemctl enable syncthing-resume
 systemctl restart syncthing@root
 
+sleep 30
 echo >&2 "Serving via Tailscale..."
 tailscale serve --bg --https 8384 http://127.0.0.1:8384
 

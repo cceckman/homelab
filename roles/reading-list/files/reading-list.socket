@@ -1,0 +1,14 @@
+[Unit]
+Description=Reading Roundup server
+
+Requires=tailscaled.service
+After=tailscaled.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Socket]
+Accept=no
+ListenStream=127.0.0.1:7434
+BindToDevice=lo
+
