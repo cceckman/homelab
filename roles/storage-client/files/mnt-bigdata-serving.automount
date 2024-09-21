@@ -1,5 +1,10 @@
 [Unit]
 Description=samba automount for bigdata/serving
+After=network-online.target
+Wants=network-online.target
+Requires=tailscaled.service
+After=tailscaled.service
+
 
 [Automount]
 Where=/mnt/bigdata/serving

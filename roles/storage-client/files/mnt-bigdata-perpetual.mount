@@ -1,8 +1,9 @@
 [Unit]
 Description=samba mount for bigdata/perpetual
-Requires=systemd-networkd.service
 After=network-online.target
 Wants=network-online.target
+Requires=tailscaled.service
+After=tailscaled.service
 
 [Mount]
 What=//storage.monkey-heptatonic.ts.net/bigdata_perpetual
