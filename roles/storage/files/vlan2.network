@@ -1,0 +1,7 @@
+[Match]
+PermanentMACAddress=BC:24:11:B3:7B:11
+
+[Network]
+DHCP=no
+Address=192.168.2.103/24
+Gateway=192.168.2.1

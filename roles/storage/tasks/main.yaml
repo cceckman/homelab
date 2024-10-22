@@ -1,5 +1,11 @@
 - name: "Install zfs support"
   ansible.builtin.include_tasks: zfs.yaml
+- name: "Install second interface"
+  become: true
+  ansible.builtin.copy:
+    src: "vlan2.network"
+    dest: /etc/systemd/network/10-vlan2.network
+    mode: 0644
 - name: "Create storage-access group"
   become: true
   ansible.builtin.group:

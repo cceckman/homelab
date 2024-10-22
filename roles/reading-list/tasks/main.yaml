@@ -24,6 +24,13 @@
   ansible.builtin.copy:
     dest: /etc/systemd/system
     src: "{{ item }}"
+- name: "Halt reading list for restart"
+  become: true
+  with_items:
+    - reading-list.service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
 - name: "Enable socket"
   become: true
   with_items:
@@ -32,7 +39,7 @@
     daemon_reload: true
     name: "{{ item }}"
     enabled: true
-    state: "started"
+    state: started
 - name: "Propagate tailscale"
   become: true
   ansible.builtin.command:
