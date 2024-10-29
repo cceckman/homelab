@@ -3,6 +3,12 @@
   hosts: all
   gather_facts: false
   roles: [login]
+- name: "Install BIND and configuration"
+  hosts:
+    - pvm1
+    - pvm2
+  roles:
+    - dns
 - name: "Install Samba client config"
   hosts:
     - localhost

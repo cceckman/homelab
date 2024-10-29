@@ -1,0 +1,36 @@
+- name: "Install apt packages"
+  become: true
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    pkg:
+      - bind9
+      - dnsutils
+      - fail2ban
+      - tcpdump
+- name: "Add configuration files"
+  become: true
+  loop: '{{ dns_roles | flatten(levels=1) }}'
+  ansible.builtin.copy:
+    decrypt: true
+    mode: '0644'
+    src: '{{ item }}/'
+    dest: "/etc/bind/{{ item }}"
+- name: "Replace options file"
+  become: true
+  ansible.builtin.lineinfile:
+    regexp: '^[ ]*include .*/etc/bind/named\.conf\.options.*'
+    state: "absent"
+    path: /etc/bind/named.conf
+
+- name: "Include configuration files"
+  become: true
+  loop: '{{ dns_roles | flatten(levels=1) }}'
+  ansible.builtin.lineinfile:
+    line: 'include "/etc/bind/{{ item }}/*.conf";'
+    path: /etc/bind/named.conf
+- name: "Reload configuration"
+  become: true
+  # Lightest possible config reload:
+  ansible.builtin.command: 'pkill -HUP named'
+    
+
