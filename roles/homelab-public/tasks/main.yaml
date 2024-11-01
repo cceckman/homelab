@@ -1,0 +1,11 @@
+- name: "Apply network configuration"
+  become: true
+  with_items:
+    - 10-eth0.network
+    - 10-eth1.network
+  ansible.builtin.copy:
+    decrypt: true
+    mode: '0644'
+    src: '{{ item }}'
+    dest: "/etc/systemd/network/{{ item }}"
+

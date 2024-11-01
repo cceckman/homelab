@@ -3,6 +3,18 @@
   hosts: all
   gather_facts: false
   roles: [login]
+- name: "Install public-VM configuration"
+  hosts:
+    - pvm0
+  roles:
+    - homelab-public
+- name: "Install BIND and configuration"
+  hosts:
+    - pvm0
+    - pvm1
+    - pvm2
+  roles:
+    - dns
 - name: "Install Samba client config"
   hosts:
     - localhost
