@@ -1,3 +1,11 @@
+- name: "Remove cruft"
+  become: true
+  ansible.builtin.apt:
+    state: absent
+    cache_valid_time: 3600
+    pkg:
+      - google-cloud-cli
+      - google-cloud-anthoscli
 - name: "Install apt packages"
   become: true
   ansible.builtin.apt:
@@ -7,6 +15,7 @@
       - dnsutils
       - fail2ban
       - tcpdump
+      - mtr-tiny
 - name: "Add configuration files"
   become: true
   loop: '{{ dns_roles | flatten(levels=1) }}'
