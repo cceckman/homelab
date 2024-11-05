@@ -3,9 +3,9 @@
   # Requires host facts
   hosts:
     - storage
-    - prober
     - rack19
     - compute
+    - rack11
   vars:
     node_exporter_disabled_collectors:
       - arp
@@ -23,7 +23,7 @@
 - name: "Install Prometheus blackbox_exporter"
   # Requires host facts?
   hosts:
-    - prober
+    - rack11
   vars:
     blackbox_exporter_configuration_modules:
       http_2xx_ipv6:
@@ -104,7 +104,7 @@
           - ifupdown
         state: absent
 - name: "Configure prometheus servers"
-  hosts: prober
+  hosts: rack11
   no_log: false
   vars:
     prometheus_agent_mode: true

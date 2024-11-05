@@ -3,9 +3,6 @@ all:
     localhost:
       ansible_connection: local
       ansible_user: cceckman
-    prober:
-      ansible_user: cceckman
-      ansible_host: prober
     rack19:
       ansible_host: rack19
       ansible_user: root
@@ -30,9 +27,8 @@ all:
       ansible_user: root
       dns_roles:
         - secondary
-#   rack12:
-#     ansible_host: rack12
-#     ansible_user: cceckman
-#     ansible_ssh_private_key_file: ~/.ssh/id_pis
+    rack11:
+      ansible_host: rack11
+      ansible_user: cceckman
     remarkable: {} # No Python, has to be reached via script
 
