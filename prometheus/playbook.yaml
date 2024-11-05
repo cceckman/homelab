@@ -20,6 +20,12 @@
     node_exporter_enabled_collectors: []
   roles:
     - prometheus.prometheus.node_exporter
+- name: "Load hidden hostnames"
+  hosts:
+    - rack11
+  tasks:
+    - ansible.builtin.include_vars:
+        file: dns-vars.yaml
 - name: "Install Prometheus blackbox_exporter"
   # Requires host facts?
   hosts:
@@ -36,6 +42,13 @@
         http:
           preferred_ip_protocol: ipv4
           ip_protocol_fallback: false
+      dns_authv_aux_soa:
+        prober: dns
+        dns:
+          query_name: "{{ dns_auxiliary_domain }}"
+          query_type: SOA
+          valid_rcodes:
+            - NOERROR
   roles:
     - prometheus.prometheus.blackbox_exporter
 - name: "Install Prometheus IMPI exporter"
@@ -70,39 +83,6 @@
         name: "ipmi-exporter"
         enabled: true
         state: restarted
-- name: "Switch resolvers"
-  gather_facts: false
-  hosts:
-    - prober
-  tasks:
-    - name: "Install systemd network files"
-      become: true
-      ansible.builtin.copy:
-        src: 20-default.network
-        dest: /etc/systemd/network
-    - name: "Install systemd networking"
-      become: true
-      ansible.builtin.apt:
-        pkg:
-          - "systemd-resolved"
-    - name: "Enable systemd network components"
-      become: true
-      with_items:
-        - "systemd-resolved"
-        - "systemd-networkd"
-      ansible.builtin.systemd:
-        name: "{{ item }}"
-        enabled: true
-        state: restarted
-# Below is not perfectly reproducible; I ran these by hand
-# and rebooted to get the result I wanted (systemd managing everything.)
-    - name: "Uninstall non-systemd networking"
-      become: true
-      ansible.builtin.apt:
-        pkg:
-          - isc-dhcp-client
-          - ifupdown
-        state: absent
 - name: "Configure prometheus servers"
   hosts: rack11
   no_log: false
@@ -137,10 +117,12 @@
       - job_name: "blackbox_exporter"
         static_configs:
           - targets: ["127.0.0.1:9115"]
-      - job_name: "blackbox"
+      - job_name: "blackbox-http"
         metrics_path: /probe
         params:
-          module: [http_2xx_ipv4, http_2xx_ipv6]  # Look for a HTTP 200 response
+          module:
+            - http_2xx_ipv4
+            - http_2xx_ipv6
         file_sd_configs:
           - files:
             - "{{ prometheus_config_dir }}/file_sd/blackbox.yml"
@@ -151,6 +133,22 @@
             target_label: instance
           - target_label: __address__
             replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+      - job_name: "blackbox-dns"
+        metrics_path: /probe
+        params:
+          module:
+            - dns_authv_aux_soa
+        file_sd_configs:
+          - files:
+            - "{{ prometheus_config_dir }}/file_sd/blackbox_dns.yml"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+
   roles:
     - prometheus.prometheus.prometheus
 
