@@ -30,13 +30,6 @@ diff >&2 mount/boot/config.txt config.txt || true
 sudo -n cp config.txt mount/boot/config.txt
 sudo -n touch mount/boot/ssh
 
-# isolcpus for better LED matrix performance:
-# https://access.redhat.com/solutions/480473
-# For SPI use for NeoPixel driver:
-# https://github.com/jgarff/rpi_ws281x?tab=readme-ov-file#spi
-# 1: replace only on the first line
-sudo sed -i "1 s/$/ isolcpus=3 spidev.bufsiz=32768/" mount/boot/cmdline.txt
-
 sudo -n mkdir -p mount/opt/
 sudo -n cp firstboot.sh mount/opt/firstboot.sh
 sudo -n cp firstboot-wifi.sh mount/opt/firstboot-wifi.sh

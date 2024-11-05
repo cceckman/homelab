@@ -5,14 +5,12 @@
 # Uncomment some or all of these to enable the optional hardware interfaces
 #dtparam=i2c_arm=on
 #dtparam=i2s=on
-# ENABLED for aclock
-dtparam=spi=on
+# dtparam=spi=on
 
 # Enable audio (loads snd_bcm2835)
-# DISABLED for aclock
-dtparam=audio=off
+# dtparam=audio=off
 
-# ENABLED for aclock
+# Enable serial
 enable_uart=1
 
 # Additional overlays and parameters are documented
@@ -42,10 +40,9 @@ arm_64bit=1
 disable_overscan=1
 
 # Run as fast as firmware / board allows
-# DISABLED for aclock
 # arm_boost=1
 
-# SET for aclock:
+# Keep the serial stable, and ready for NeoPixel
 # https://github.com/jgarff/rpi_ws281x?tab=readme-ov-file#spi
 core_freq=250
 
