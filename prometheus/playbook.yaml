@@ -47,8 +47,20 @@
         dns:
           query_name: "{{ dns_auxiliary_domain }}"
           query_type: SOA
+          preferred_ip_protocol: ipv4
+          ip_protocol_fallback: true
           valid_rcodes:
             - NOERROR
+          recursion_desired: false
+         #validate_authority_rrs:
+         #  fail_if_not_matches_regexp:
+         #    - 'NS.*pvm1\..*'
+         #validate_additional_rrs:
+         #  fail_if_none_matches_regexp:
+         #    - 'pvm1.*A.*34.56.231.75'
+         #    - 'pvm2.*A.*178.128.134.39'
+         #    - 'pvm1.*AAAA.*2600:1900:4000:4b32:0:3::'
+         #    - 'pvm2.*AAAA.*2604:a880:400:d1::5365:8001'
   roles:
     - prometheus.prometheus.blackbox_exporter
 - name: "Install Prometheus IMPI exporter"
@@ -140,7 +152,7 @@
             - dns_authv_aux_soa
         file_sd_configs:
           - files:
-            - "{{ prometheus_config_dir }}/file_sd/blackbox_dns.yml"
+            - "{{ prometheus_config_dir }}/file_sd/dns_authv.yml"
         relabel_configs:
           - source_labels: [__address__]
             target_label: __param_target
