@@ -4,8 +4,8 @@ $ORIGIN cceckman.com. ; base domain name. Absolute -- needs the trailing dot!
 
 ; Start of Authority RR defining the key characteristics of the zone (domain)
 @                     IN      SOA   pvm1.cceckman.com. hostmaster.cceckman.com. (
-                                            9          ; serial number
-                                            24h        ; refresh (secondaries of primary); high, since notify is enabled
+                                            11         ; serial number
+                                            1h         ; refresh (secondaries of primary); keep relatively small, since notify isn't working yet
                                             30m        ; update retry (secondaries of primary)
                                             7d         ; expiry (secondaries stop replying if primary is offline)
                                             1h         ; minimum (TTL of negative responses)
@@ -58,10 +58,10 @@ _dmarc                  3600    IN      TXT     "v=DMARC1; p=quarantine; rua=mai
 cce._domainkey          3600    IN    TXT     "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCewH3NRPF3LVvTVfD9LBZrpdnq1StIKG9VxxbQv1/6zKf4BGdo0uC3DQSzVcUtS4Av7xP5nExX+Qke8882YiPbvAFQbtLI/oSgowp7JC1M1omz19GUz7xwjUMrcikeMslvcum4UWPA8pn2zU9KpYRYrLBvUdZOFpdMlyZNiyEnQQIDAQAB"
 
 ; public VMs, acting as nameservers
-pvm1        IN      AAAA    2600:1900:4000:4b32:0:3::
 pvm1        IN      A       34.56.231.75
-pvm2        IN      AAAA    2604:a880:400:d1::5365:8001
 pvm2        IN      A       178.128.134.39
+pvm1        IN      AAAA    2600:1900:4000:4b32:0:3::
+pvm2        IN      AAAA    2604:a880:400:d1::5365:8001
 
 ; and just a note
 _message    IN      TXT     "This has been updated recently."
