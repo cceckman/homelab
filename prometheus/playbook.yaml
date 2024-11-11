@@ -42,7 +42,7 @@
         http:
           preferred_ip_protocol: ipv4
           ip_protocol_fallback: false
-      dns_authv_:
+      dns_authv_soa:
         prober: dns
         dns:
           query_name: "{{ dns_primary_domain }}"
