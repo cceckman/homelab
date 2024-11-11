@@ -3,8 +3,8 @@ $TTL 5m ; Short default, we're experimenting
 $ORIGIN cceckman.com. ; base domain name. Absolute -- needs the trailing dot!
 
 ; Start of Authority RR defining the key characteristics of the zone (domain)
-            @         IN      SOA   pvm1.cceckman.com. hostmaster.cceckman.com. (
-                                            7          ; serial number
+@                     IN      SOA   pvm1.cceckman.com. hostmaster.cceckman.com. (
+                                            9          ; serial number
                                             24h        ; refresh (secondaries of primary); high, since notify is enabled
                                             30m        ; update retry (secondaries of primary)
                                             7d         ; expiry (secondaries stop replying if primary is offline)
@@ -38,11 +38,9 @@ $ORIGIN cceckman.com. ; base domain name. Absolute -- needs the trailing dot!
                         3600    IN      TXT     "fastly-domain-delegation-XYgmEVlB-781532-20240622"
 _acme-challenge          300    IN      CNAME   cv36xzt87h0uolgwl9.fastly-validations.com.
 
-; DNS: old nameserver RRs
-@                       21600   IN      NS      ns-cloud-b1.googledomains.com.
-                        21600   IN      NS      ns-cloud-b3.googledomains.com.
-                        21600   IN      NS      ns-cloud-b4.googledomains.com.
-                        21600   IN      NS      ns-cloud-b2.googledomains.com.
+; DNS: new nameserver RRs
+@                       21600   IN      NS      pvm1.cceckman.com.
+                        21600   IN      NS      pvm2.cceckman.com.
 
 ; new name server RR for the domain; these need to be glued
 ;           IN      NS      pvm1.cceckman.com.
