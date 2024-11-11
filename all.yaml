@@ -27,6 +27,7 @@
   hosts:
     - storage
     - compute
+    - rack11
   roles:
     - artis3n.tailscale
   vars:
