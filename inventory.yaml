@@ -13,7 +13,7 @@ all:
       ansible_host: compute
       ansible_user: cceckman
     pvm0:
-      ansible_host: pvm.local
+      ansible_host: pvm0
       ansible_user: cceckman
       dns_roles:
         - primary
