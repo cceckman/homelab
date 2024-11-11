@@ -3,24 +3,25 @@ $TTL 5m ; Short default, we're experimenting
 $ORIGIN cceckman.com. ; base domain name. Absolute -- needs the trailing dot!
 
 ; Start of Authority RR defining the key characteristics of the zone (domain)
-;           @         IN      SOA   pvm1.cceckman.com. hostmaster.cceckman.com. (
-;                                           7          ; serial number
-;                                           24h        ; refresh (secondaries of primary); high, since notify is enabled
-;                                           15m        ; update retry (secondaries of primary)
-;                                           7d         ; expiry (secondaries stop replying if primary is offline)
-;                                           2h         ; minimum (TTL of negative responses)
-;                                           )
+            @         IN      SOA   pvm1.cceckman.com. hostmaster.cceckman.com. (
+                                            7          ; serial number
+                                            24h        ; refresh (secondaries of primary); high, since notify is enabled
+                                            30m        ; update retry (secondaries of primary)
+                                            7d         ; expiry (secondaries stop replying if primary is offline)
+                                            1h         ; minimum (TTL of negative responses)
+                                            )
 
 ; Old SOA
-@                       21600   IN      SOA     (
-                                                ns-cloud-b1.googledomains.com.
-                                                cloud-dns-hostmaster.google.com.
-                                                6                       ; serial
-                                                21600                   ; refresh
-                                                3600                    ; retry
-                                                259200                  ; expiry
-                                                300                     ; minimum / negative TTL
-                                                )
+;                       21600   IN      SOA     (
+;                                               ns-cloud-b1.googledomains.com.
+;                                               cloud-dns-hostmaster.google.com.
+;                                               6                       ; serial
+;                                               21600                   ; refresh
+;                                               3600                    ; retry
+;                                               259200                  ; expiry
+;                                               300                     ; minimum / negative TTL
+;                                               )
+
 ; Web: Fastly's anycast IPs
                         3600    IN      AAAA    2a04:4e42:200::820
                         3600    IN      AAAA    2a04:4e42:400::820
