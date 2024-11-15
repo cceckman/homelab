@@ -16,22 +16,44 @@
       - fail2ban
       - tcpdump
       - mtr-tiny
-- name: "Add configuration files"
+- name: "Add zone files to /var"
   become: true
   loop: '{{ dns_roles | flatten(levels=1) }}'
   ansible.builtin.copy:
     decrypt: true
     mode: '0644'
     src: '{{ item }}/'
-    dest: "/etc/bind/{{ item }}"
-- name: "Replace options file"
+    # Must be in /var due to AppArmor:
+    # https://lists.isc.org/mailman/htdig/bind-users/2020-September/103706.html
+    dest: "/var/lib/bind/{{ item }}"
+- name: "Make /etc/bind subdirectory"
+  become: true
+  loop: '{{ dns_roles | flatten(levels=1) }}'
+  ansible.builtin.file:
+    state: directory
+    mode: '0755'
+    owner: bind
+    group: bind
+    path: '/etc/bind/{{ item }}'
+- name: "Add named config to /etc"
+  become: true
+  loop: '{{ dns_roles | flatten(levels=1) }}'
+  ansible.builtin.copy:
+    decrypt: true
+    mode: '0644'
+    owner: bind
+    group: bind
+    src: '{{ item }}/named.conf'
+    # Alas, needs to be outside of etc/ due to AppArmor:
+    # https://lists.isc.org/mailman/htdig/bind-users/2020-September/103706.html
+    dest: "/etc/bind/{{ item }}/named.conf"
+- name: "Un-include options file"
   become: true
   ansible.builtin.lineinfile:
     regexp: '^[ ]*include .*/etc/bind/named\.conf\.options.*'
     state: "absent"
     path: /etc/bind/named.conf
-
-- name: "Include configuration files"
+- name: "Include configuration file(s)"
   become: true
   loop: '{{ dns_roles | flatten(levels=1) }}'
   ansible.builtin.lineinfile:
