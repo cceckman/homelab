@@ -1,0 +1,8 @@
+- name: "Install QEMU guest agent"
+  become: true
+  ansible.builtin.apt:
+    state: present
+    cache_valid_time: 3600
+    pkg:
+      - qemu-guest-agent
+

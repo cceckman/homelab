@@ -15,6 +15,13 @@
     - pvm2
   roles:
     - dns
+- name: "Install QEMU guest agent"
+  hosts:
+    - pvm0
+    - compute
+    - storage
+  roles:
+    - vm
 - name: "Install Samba client config"
   hosts:
     - localhost
