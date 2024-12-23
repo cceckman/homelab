@@ -1,8 +1,9 @@
 ---
-- name: "Install fallback key"
+- name: "Baseline configuration"
   hosts: all
-  gather_facts: false
-  roles: [login]
+  roles:
+    - login
+    - unattended-upgrades
 - name: "Install public-VM configuration"
   hosts:
     - pvm0

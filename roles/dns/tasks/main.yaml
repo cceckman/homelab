@@ -16,37 +16,34 @@
       - fail2ban
       - tcpdump
       - mtr-tiny
-- name: "Add zone files to /var"
-  become: true
-  loop: '{{ dns_roles | flatten(levels=1) }}'
-  ansible.builtin.copy:
-    decrypt: true
-    mode: '0644'
-    src: '{{ item }}/'
-    # Must be in /var due to AppArmor:
-    # https://lists.isc.org/mailman/htdig/bind-users/2020-September/103706.html
-    dest: "/var/lib/bind/{{ item }}"
 - name: "Make /etc/bind subdirectory"
   become: true
-  loop: '{{ dns_roles | flatten(levels=1) }}'
   ansible.builtin.file:
     state: directory
     mode: '0755'
     owner: bind
     group: bind
-    path: '/etc/bind/{{ item }}'
-- name: "Add named config to /etc"
+    path: '/etc/bind/{{ dns_role }}'
+- name: "Add files to /etc"
   become: true
-  loop: '{{ dns_roles | flatten(levels=1) }}'
+  with_fileglob:
+    - '{{ dns_role }}/*'
   ansible.builtin.copy:
     decrypt: true
     mode: '0644'
-    owner: bind
-    group: bind
-    src: '{{ item }}/named.conf'
-    # Alas, needs to be outside of etc/ due to AppArmor:
+    src: '{{ item }}'
+    dest: "/etc/bind/{{ dns_role }}/{{ item | basename }}"
+- name: "Add zone links to /var"
+  become: true
+  with_fileglob:
+    - '{{ dns_role }}/*.db'
+  ansible.builtin.file:
+    state: link
+    mode: '0644'
+    src: '/etc/bind/{{ dns_role }}/{{ item | basename }}'
+    # Must be in /var due to AppArmor:
     # https://lists.isc.org/mailman/htdig/bind-users/2020-September/103706.html
-    dest: "/etc/bind/{{ item }}/named.conf"
+    dest: "/var/lib/bind/{{ dns_role }}/{{ item | basename }}"
 - name: "Un-include options file"
   become: true
   ansible.builtin.lineinfile:
@@ -55,9 +52,8 @@
     path: /etc/bind/named.conf
 - name: "Include configuration file(s)"
   become: true
-  loop: '{{ dns_roles | flatten(levels=1) }}'
   ansible.builtin.lineinfile:
-    line: 'include "/etc/bind/{{ item }}/*.conf";'
+    line: 'include "/etc/bind/{{ dns_role }}/*.conf";'
     path: /etc/bind/named.conf
 - name: "Reload configuration"
   become: true

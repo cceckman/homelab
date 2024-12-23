@@ -15,18 +15,15 @@ all:
     pvm0:
       ansible_host: pvm0
       ansible_user: cceckman
-      dns_roles:
-        - primary
+      dns_role: primary
     pvm1:
       ansible_host: pvm1
       ansible_user: cceckman
-      dns_roles:
-        - secondary
+      dns_role: secondary
     pvm2:
       ansible_host: pvm2
       ansible_user: root
-      dns_roles:
-        - secondary
+      dns_role: secondary
     rack11:
       ansible_host: rack11
       ansible_user: cceckman
