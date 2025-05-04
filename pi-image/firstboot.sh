@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 # First-boot setup that Raspbian doesn't like to let us do itself.
 
 raspi-config nonint do_change_timezone "America/New_York"
@@ -26,5 +26,13 @@ su cceckman -c "echo 'sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5
 # Recommended in
 # https://github.com/hzeller/rpi-rgb-led-matrix/tree/master?tab=readme-ov-file#use-minimal-raspbian-distribution
 apt-get remove -y bluez bluez-firmware pi-bluetooth triggerhappy pigpio
+
+# Tailscale setup, up-front:
+curl -fsSL https://tailscale.com/install.sh | sh
+
+if test -f /etc/tskey
+then
+  tailscale up --auth-key=$(cat /etc/tskey) && rm /etc/tskey
+fi
 
 systemctl disable cce-firstboot

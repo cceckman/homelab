@@ -1,6 +1,7 @@
 
 set -eu
-redo-ifchange rpi-64.img
+redo-ifchange rpi-64.img tskey firstboot-wifi.sh
+chmod 0400 tskey
 
 cp rpi-64.img "$3"
 
@@ -32,9 +33,11 @@ sudo -n touch mount/boot/ssh
 
 sudo -n mkdir -p mount/opt/
 sudo -n cp firstboot.sh mount/opt/firstboot.sh
+chmod +x firstboot-wifi.sh
 sudo -n cp firstboot-wifi.sh mount/opt/firstboot-wifi.sh
 sudo -n cp cce-firstboot.service mount/etc/systemd/system/cce-firstboot.service
 sudo -n ln -s /etc/systemd/system/cce-firstboot.service mount/etc/systemd/system/multi-user.target.wants/cce-firstboot.service
+sudo -n cp tskey /etc/tskey
 
 # Remove mountpoint (-R ecursive -d etach loop device)
 sudo -n umount -Rd mount/
