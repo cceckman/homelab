@@ -4,7 +4,7 @@ $ORIGIN cceckman.com. ; base domain name. Absolute -- needs the trailing dot!
 
 ; Start of Authority RR defining the key characteristics of the zone (domain)
 @                     IN      SOA   pvm1.cceckman.com. hostmaster.cceckman.com. (
-                                            12         ; serial number
+                                            14         ; serial number
                                             1h         ; refresh (secondaries of primary); keep relatively small, since notify isn't working yet
                                             30m        ; update retry (secondaries of primary)
                                             7d         ; expiry (secondaries stop replying if primary is offline)
@@ -62,6 +62,10 @@ pvm1        IN      AAAA    2600:1900:4000:4b32:0:3::
 pvm1        IN      A       34.56.231.75
 pvm2        IN      AAAA    2604:a880:400:d1::5366:1001
 pvm2        IN      A       178.128.134.39
+
+; leaderboard champion, prototype
+leaderboard IN      AAAA    2604:a880:400:d1::5366:1001
+leaderboard IN      A       178.128.134.39
 
 
 ; and just a note
