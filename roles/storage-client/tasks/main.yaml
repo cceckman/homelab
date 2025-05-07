@@ -8,7 +8,7 @@
     name: "cceckman"
     groups: ["storage-access"]
     append: yes
-- name: "Install Samba support"
+- name: "Install Samba, NFS support"
   become: true
   ansible.builtin.apt:
     cache_valid_time: 3600
@@ -16,17 +16,31 @@
     pkg:
       - samba
       - cifs-utils
-- name: "Add config directory"
+      - nfs-client
+- name: "Add Samba config directory"
   become: true
   ansible.builtin.file:
     state: "directory"
     path: /etc/samba/
-- name: "Add credentials file"
+- name: "Add Samba credentials file"
   become: true
   ansible.builtin.copy:
     src: "smbcreds"
     dest: /etc/samba/smbcreds
     mode: 0600
+- name: "Configure NFS client"
+  become: true
+  with_items:
+    - etc/idmapd.conf
+    - etc/default/nfs-common
+    - etc/modprobe.d/nfs.conf
+  ansible.builtin.copy:
+    src: "nfs/{{ item }}"
+    dest: "/{{ item }}"
+    mode: 0644
+- name: "Modprobe to enable ID mapping"
+  become: true
+  ansible.builtin.command: 'echo "N" > /sys/module/nfs/parameters/nfs4_disable_idmapping'
 - name: "Add mountpoints"
   become: true
   with_items:
@@ -35,6 +49,19 @@
   ansible.builtin.file:
     state: "directory"
     path: "{{ item }}"
+- name: "Create storage-access group"
+  become: true
+  ansible.builtin.group:
+    name: storage-access
+- name: "Create storage-access user"
+  become: true
+  ansible.builtin.user:
+    name: storage-access
+    groups:
+      - storage-access
+    password: "!"
+    password_lock: true
+    shell: "/usr/bin/false"
 - name: "Add mount units"
   become: true
   with_items:

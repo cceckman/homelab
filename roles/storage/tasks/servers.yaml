@@ -17,10 +17,37 @@
   ansible.builtin.systemd:
     name: smbd
     state: restarted
+- name: "Configure NFS server"
+  become: true
+  with_items:
+    - etc/idmapd.conf
+    - etc/default/nfs-common
+    - etc/default/nfs-kernel-server
+    - etc/modprobe.d/nfsd.conf
+  ansible.builtin.copy:
+    src: "nfs/{{ item }}"
+    dest: "/{{ item }}"
+    mode: 0644
+- name: "Modprobe to enable ID mapping"
+  become: true
+  ansible.builtin.command: 'echo "N" > /sys/module/nfsd/parameters/nfs4_disable_idmapping'
+- name: "Restart kernel server"
+  become: true
+  ansible.builtin.systemd:
+    name: nfs-kernel-server
+    state: restarted
+# - name: "Shut down nfsv3 servers"
+#   become: true
+#   with_items:
+#     - rpcbind.socket
+#     - rpcbind.service
+#   ansible.builtin.systemd:
+#     name: "{{ item }}"
+#     masked: true
+#     state: stopped
 # TODO: Set up postgres, user, DB for miniflux.
 # Or fork it to a sqlite version. >.>
 - name: "Install miniflux"
   become: true
   ansible.builtin.apt:
-    deb: https://github.com/miniflux/v2/releases/download/2.1.3/miniflux_2.1.3_amd64.deb
-
+    deb: https://github.com/miniflux/v2/releases/download/2.2.8/miniflux_2.2.8_amd64.deb

@@ -1,16 +1,13 @@
 [Unit]
-Description=samba mount for bigdata/serving
+Description=NFS mount for bigdata/serving
 After=network-online.target
 Wants=network-online.target
 Requires=tailscaled.service
 After=tailscaled.service
 
 [Mount]
-What=//storage.monkey-heptatonic.ts.net/bigdata_serving
+What=storage.monkey-heptatonic.ts.net:/mnt/bigdata/serving
 Where=/mnt/bigdata/serving
-Options=vers=2.1,credentials=/etc/samba/smbcreds,iocharset=utf8,rw,x-systemd.automount,uid=root,gid=storage-access
-Type=cifs
+Type=nfs
 TimeoutSec=30
 
-[Install]
-WantedBy=multi-user.target
