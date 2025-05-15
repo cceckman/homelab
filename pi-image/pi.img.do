@@ -1,6 +1,12 @@
 
 set -eu
-redo-ifchange rpi-64.img tskey firstboot-wifi.sh
+
+# Do the easily-interactive thing up front:
+sudo -n echo >&2 "noninteractive sudo works"
+
+# Put the decryption targets first, so we fail fast if we can't decrypt them.
+# rpi-64.img is a big download if it's not already on disk, we don't want to download it and then get an error.
+redo-ifchange tskey firstboot-wifi.sh rpi-64.img
 chmod 0400 tskey
 
 cp rpi-64.img "$3"
