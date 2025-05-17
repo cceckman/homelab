@@ -111,7 +111,7 @@ chmod +x "$CONTENT/setup.sh"
 echo >&2 "Connecting and uploading..."
 ssh -o ConnectTimeout=5 root@"$TARGET" \
   "echo >&2 'Connected to reMarkable!'; rm -rf $TSINSTALLPATH; mkdir -p $TSINSTALLPATH" >&2
-rsync -avz "$CONTENT" "$TARGET:$TSINSTALLPATH"
+rsync -avz "$CONTENT" root@"$TARGET:$TSINSTALLPATH"
 
 echo >&2 "Running setup script..."
 # Execute under systemd-run, so even if our network connection hangs up due to
