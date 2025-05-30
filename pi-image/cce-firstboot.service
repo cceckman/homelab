@@ -1,8 +1,10 @@
 [Unit]
 Description=First-boot setup
 
-WantedBy=multi-user.target
 Requires=network-online.target
+
+[Install]
+WantedBy=multi-user.target
 
 [Service]
 ExecStart=/opt/firstboot.sh

@@ -27,5 +27,11 @@ all:
     rack11:
       ansible_host: rack11
       ansible_user: cceckman
+    parent-pi:
+      ansible_host: parent-pi
+      ansible_user: cceckman
+    meg-pi:
+      ansible_host: meg-pi
+      ansible_user: pi
     remarkable: {} # No Python, has to be reached via script
 
