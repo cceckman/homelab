@@ -4,4 +4,10 @@
     comment: "fallback"
     key: "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIFhsrsc3V3KcH79keRp/jL38ty/BHh5897avu2hMvthJAAAABHNzaDo="
     user: "{{ ansible_user }}"
+- name: "Install ring key"
+  become: true
+  ansible.posix.authorized_key:
+    comment: "ring"
+    key: "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICfZXtJa9zv/MMtdEhFd90/KvN4mpa1RkREDVRA558qxAAAABHNzaDo="
+    user: "{{ ansible_user }}"
 
